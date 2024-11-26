@@ -15,20 +15,26 @@
           <ul class="list">
               <form id="form1">
                 <div id="tab1" class="content">
-                    <p id="a">아이디</p>
-                    <input type="text" name="username" class="form">
-                    <p id="a">비밀번호</p>
-                    <input type="password" name="password" class="form">
+                    <p id="a">신규 아이디</p>
+                    <input type="text" class="form">
+                    <p id="a">신규 비밀번호</p>
+                    <input type="text" class="form">
                 </div>
                 <div>
-                    <button type="submit" class="submit">회원가입</button>
-                    <button type="button" id="login-btn" class="submit">로그인</button>
+                    <button type="submit" class="submit">확인</button>
                 </div>
               </form>
           </ul>
         </div>
     </div>
 
-    <script src="index.js"></script>
+    <script>
+        // JavaScript 코드 추가
+        document.getElementById('form1').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼의 기본 동작(페이지 이동)을 막음
+            alert('가입되었습니다'); // 알림창 표시
+            window.location.href = '/';
+        });
+    </script>
 </body>
 </html>
