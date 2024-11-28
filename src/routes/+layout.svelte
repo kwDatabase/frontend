@@ -1,0 +1,6 @@
+<nav>
+    <a href="/">Home</a>
+    <a href="/admin">Admin</a>
+  </nav>
+  
+  <slot></slot>
