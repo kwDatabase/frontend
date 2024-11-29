@@ -1,9 +1,11 @@
 <script>
-  import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Button, Input } from 'flowbite-svelte';
+  import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, Button, Input, DarkMode } from 'flowbite-svelte';
   import { SearchOutline } from 'flowbite-svelte-icons';
+  let btnClass = 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-xl p-2';
+
 </script>
 
-<Navbar>
+<Navbar class="border border-gray-700">
   <NavBrand href="/">
     <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Market</span>
   </NavBrand>
@@ -18,6 +20,7 @@
       <Input id="search-navbar" class="ps-10" placeholder="Search..." />
     </div>
     <NavHamburger />
+    <DarkMode {btnClass} />
   </div>
   <NavUl>
     <NavLi href="/" active={true}>Home</NavLi>
