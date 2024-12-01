@@ -97,11 +97,8 @@
           <p class="text-gray-500">{product.price}원</p>
           <p class="text-gray-500">판매자: {product.seller}</p>
           <p class="text-gray-500">판매자 평점: {product.rating} ⭐</p> <!-- 판매자 평점 표시 -->
-          <div class="flex justify-between items-center">
-            <a
-              href={`/products/edit/${product.id}`}
-              class="text-blue-500 hover:underline">수정</a
-            >
+          <div class="flex justify-end items-center">
+            <Button on:click={() => goto(`/products/${product.id}`)} color="green">조회</Button> <!-- 조회 버튼 추가 -->
           </div>
         </div>
       </div>
