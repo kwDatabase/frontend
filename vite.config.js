@@ -13,7 +13,7 @@ const config = {
 		}
 	},
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}']
+		include: ['./public', 'src/**/*.{test,spec}.{js,ts}']
 	}
 };
 

@@ -1,4 +1,4 @@
-import { PRODUCTS } from '../../lib/sampleData/products.ts';
+import { PRODUCTS } from '../../lib/sampleData/products.js';
 
 export const load = () => {
 	return {

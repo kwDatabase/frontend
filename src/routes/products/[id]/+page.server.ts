@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { PRODUCTS } from '../../../lib/sampleData/products.ts';
+import { PRODUCTS } from '../../../lib/sampleData/products.js';
 
 export const load = ({ params }) => {
     const selectedProduct = PRODUCTS.find((product) => product.id === Number(params.id)); // Number로 변환

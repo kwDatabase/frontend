@@ -2,12 +2,14 @@
   import { Input, Button, Select } from "flowbite-svelte";
   import { goto } from "$app/navigation"; // goto를 import 합니다.
 
+  
+
   export let data;
   console.log("data: ", data);
 
   let searchQuery = "";
   let sortOption = "default"; // 정렬 기준 초기화
-
+  
   let products = data.products;
   
   let filteredProducts = [...products]; // 초기 필터링된 제품 리스트
