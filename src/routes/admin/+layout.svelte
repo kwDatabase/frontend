@@ -13,10 +13,10 @@
 <style>
   .layout-container {
     display: flex;
-    height: 100vh;
+    height: 100%;
   }
   .sidebar {
-    width: 250px;
+    min-width: 150px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -30,7 +30,7 @@
 
 <main class="layout-container">
   <div class="sidebar">
-    <Sidebar class="h-full bg-gray-800 text-white border border-gray-700">
+    <Sidebar class="h-full bg-gray-50 dark:bg-gray-800 dark:text-white border-r dark:border-gray-700">
       <SidebarWrapper>
         <SidebarGroup>
           {#each routes as { label, href }}
