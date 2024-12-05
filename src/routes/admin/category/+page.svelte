@@ -35,6 +35,10 @@
     // Add a new category
     const addCategory = async () => {
       if (newCategory.trim()) {
+        if(newCategory.length > 20) {
+          alert('카테고리 이름은 최대 20자입니다.');
+          return;
+        }
         try {
           const checkResponse = await fetch(`${apiBaseUrl}/category/check/${newCategory.trim()}`);
           const { exists } = await checkResponse.json();
@@ -62,6 +66,10 @@
     // 서브카테고리 추가 함수 수정
     const addSubCategory = async (categoryId) => {
       if (categoryId && newSubCategories[categoryId]?.trim()) {
+        if(newSubCategories[categoryId].length > 20) {
+          alert('서브카테고리 이름은 최대 20자입니다.');
+          return;
+        }
         try {
           const response = await fetch(`${apiBaseUrl}/category/${categoryId}/subcategory`, {
             method: "POST",
@@ -106,6 +114,10 @@
     // Edit a category
     const saveEditCategory = async () => {
       if (editCategoryName.trim() && editingCategory) {
+        if(editCategoryName.length > 20) {
+          alert('카테고리 이름은 최대 20자입니다.');
+          return;
+        }
         try {
           const response = await fetch(`${apiBaseUrl}/category/${editingCategory.Id}`, {
             method: "PUT",
@@ -125,6 +137,10 @@
     // Edit a subcategory
     const saveEditSubCategory = async () => {
       if (editSubCategoryName.trim() && editingSubCategory) {
+        if(editSubCategoryName.length > 20) {
+          alert('서브카테고리 이름은 최대 20자입니다.');
+          return;
+        }
         const { category, sub_category } = editingSubCategory;
         try {
           const response = await fetch(`${apiBaseUrl}/category/${category.Id}/subcategory/${sub_category.sub_id}`, {
@@ -158,7 +174,7 @@
         />
         <Button 
           on:click={addCategory}
-          class="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
+          color="alternative"
         >
           추가
         </Button>
@@ -179,29 +195,45 @@
                 <div class="flex gap-2">
                   <Button 
                     on:click={saveEditCategory}
-                    class="bg-blue-600 hover:bg-blue-700 text-white"
+                    color="alternative"
                   >
                     저장
                   </Button>
                   <Button 
                     on:click={() => (editingCategory = null)}
-                    class="bg-gray-500 hover:bg-gray-600 text-white"
+                    color="light"
                   >
                     취소
                   </Button>
                 </div>
               {:else}
                 <h3 class="text-lg font-medium text-gray-800 dark:text-white">{category.name}</h3>
-                <div class="flex gap-2">
+                <div class="flex items-center gap-2 mb-2">
                   <Button 
-                    on:click={() => startEditCategory(category)}
-                    class="bg-gray-500 hover:bg-gray-600 text-white"
+                    on:click={() => category.isSubCategoryVisible = !category.isSubCategoryVisible}
+                  >
+                    {#if category.isSubCategoryVisible}
+                    <span>▼ 서브카테고리 숨기기</span>
+                  {:else}
+                      <span>▶ 서브카테고리 보기</span>
+                    {/if}
+                  </Button>
+                  <Button 
+                    on:click={() => {
+                      editingCategory = category
+                        editCategoryName = category.name
+                      }}
+                    color="blue"
                   >
                     수정
                   </Button>
                   <Button 
-                    on:click={() => deleteCategory(category.Id)}
-                    class="bg-red-500 hover:bg-red-600 text-white dark:bg-red-500 dark:hover:bg-red-600"
+                    on:click={() => {
+                      if(confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
+                        deleteCategory(category.Id)
+                      }
+                    }}
+                    color="red"
                   >
                     삭제
                   </Button>
@@ -210,56 +242,58 @@
             </div>
             <div class="ml-6 space-y-2">
               {#if category.sub_category?.length > 0}
-                {#each category.sub_category as sub_category}
-                  <div class="flex items-center justify-between bg-white dark:bg-gray-600 p-3 rounded shadow-sm">
-                    {#if editingSubCategory?.category === category && editingSubCategory?.sub_category === sub_category}
-                      <div class="flex-1 mr-4">
-                        <Input 
-                          bind:value={editSubCategoryName}
-                          class="w-full"
-                          placeholder="수정할 이름을 입력하세요"
-                        />
-                      </div>
-                      <div class="flex gap-2">
-                        <Button 
-                          on:click={saveEditSubCategory}
-                          class="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          저장
-                        </Button>
-                        <Button 
-                          on:click={() => (editingSubCategory = null)}
-                          class="bg-gray-500 hover:bg-gray-600 text-white"
-                        >
-                          취소
-                        </Button>
-                      </div>
-                    {:else}
-                      <span class="text-gray-700 dark:text-gray-200">{sub_category.name}</span>
-                      <div class="flex gap-2">
-                        <Button 
-                          on:click={() => {
-                            editingSubCategory = {category, sub_category};
-                            editSubCategoryName = sub_category.name;
-                          }}
-                          class="bg-gray-500 hover:bg-gray-600 text-white text-sm"
-                        >
-                          수정
-                        </Button>
-                        <Button 
-                          on:click={() => {
-                            if(confirm('정말로 이 서브카테고리를 삭제하시겠습니까?')) {
-                              deleteSubCategory(category.Id, sub_category.sub_id)
-                            }
-                          }}
-                          class="bg-red-500 hover:bg-red-600 text-white text-sm dark:bg-red-500 dark:hover:bg-red-600"
-                        >
-                          삭제
-                        </Button>
-                      </div>
-                    {/if}
-                  </div>
-                {/each}
+                {#if category.isSubCategoryVisible || editingCategory === category}
+                  {#each category.sub_category as sub_category}
+                    <div class="flex items-center justify-between bg-white dark:bg-gray-600 p-3 rounded shadow-sm">
+                      {#if editingSubCategory?.category === category && editingSubCategory?.sub_category === sub_category}
+                        <div class="flex-1 mr-4">
+                          <Input 
+                            bind:value={editSubCategoryName}
+                            class="w-full"
+                            placeholder="수정할 이름을 입력하세요"
+                          />
+                        </div>
+                        <div class="flex items-center gap-3 mb-2">
+                          <Button 
+                            on:click={saveEditSubCategory}
+                            color="alternative"
+                          >
+                            저장
+                          </Button>
+                          <Button 
+                            on:click={() => (editingSubCategory = null)}
+                            color="light"
+                          >
+                            취소
+                          </Button>
+                        </div>
+                      {:else}
+                        <span class="text-gray-700 dark:text-gray-200">{sub_category.name}</span>
+                        <div class="flex items-center gap-3 mb-2">
+                          <Button 
+                            on:click={() => {
+                              editingSubCategory = {category, sub_category};
+                              editSubCategoryName = sub_category.name;
+                            }}
+                            color="blue"
+                          >
+                            수정
+                          </Button>
+                          <Button 
+                            on:click={() => {
+                              if(confirm('정말로 이 서브카테고리를 삭제하시겠습니까?')) {
+                                deleteSubCategory(category.Id, sub_category.sub_id)
+                              }
+                            }}
+                            color="red"
+                          >
+                            삭제
+                          </Button>
+                        </div>
+                      {/if}
+                    </div>
+                  {/each}
+                {/if}
               {/if}
               <div class="flex gap-2 mt-3">
                 <Input
@@ -269,7 +303,7 @@
                 />
                 <Button 
                     on:click={() => addSubCategory(category.Id)}
-                    class="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
+                    color="alternative"
                 >
                     추가
                 </Button>
