@@ -4,7 +4,7 @@
   
   const routes = [
     { label: '사용자 관리', href: '/admin/user' },
-    { label: '카테고리 관리', href: '/admin/categori' },
+    { label: '카테고리 관리', href: '/admin/category' },
     { label: '권한 관리', href: '/admin/auth' },
     { label: '상품 관리', href: '/admin/product' },
     { label: '대시보드', href: '/admin/dashboard' },

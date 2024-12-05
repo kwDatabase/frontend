@@ -19,7 +19,7 @@ export const dictionary = {
 		"/": [3],
 		"/admin": [~4,[2]],
 		"/admin/auth": [5,[2]],
-		"/admin/categori": [6,[2]],
+		"/admin/category": [6,[2]],
 		"/admin/dashboard": [7,[2]],
 		"/admin/product": [8,[2]],
 		"/admin/user": [9,[2]]
