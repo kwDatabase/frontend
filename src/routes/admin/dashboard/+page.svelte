@@ -9,11 +9,10 @@
     let priceDistribution = [];
     let recentActivities = [];
 
-    // 차트 캔버스 요소 참조
     let categoryChartCanvas;
     let priceChartCanvas;
 
-    const apiBaseUrl = "http://localhost:3000";
+    const apiBaseUrl = "http://localhost:3000/admin";
 
     async function fetchDashboardData() {
         try {
@@ -32,7 +31,6 @@
             priceDistribution = await priceRes.json();
             recentActivities = await activitiesRes.json();
 
-            // 데이터 로드 후 차트 생성
             createCharts();
         } catch (error) {
             console.error('데이터 로딩 실패:', error);
@@ -40,7 +38,6 @@
     }
 
     function createCharts() {
-        // 카테고리 차트
         new Chart(categoryChartCanvas, {
             type: 'bar',
             data: {
@@ -71,7 +68,6 @@
             }
         });
 
-        // 가격 분포 차트
         new Chart(priceChartCanvas, {
             type: 'doughnut',
             data: {
@@ -104,19 +100,16 @@
     <h1 class="text-2xl font-bold mb-4">대시보드</h1>
 
     <div class="grid grid-cols-2 gap-4">
-        <!-- 카테고리별 판매 현황 -->
         <Card class="w-full" size="lg">
             <h3 class="text-lg font-bold mb-2">카테고리별 판매 현황</h3>
             <canvas bind:this={categoryChartCanvas}></canvas>
         </Card>
 
-        <!-- 가격대별 상품 분포 -->
         <Card class="w-full" size="lg">
             <h3 class="text-lg font-bold mb-2">가격대별 상품 분포</h3>
             <canvas bind:this={priceChartCanvas}></canvas>
         </Card>
 
-        <!-- 인기 상품 TOP 10 -->
         <Card class="w-full" size="lg"  >
             <h3 class="text-lg font-bold mb-2">인기 상품 TOP 10</h3>
             <div class="overflow-x-auto">
@@ -149,7 +142,6 @@
             </div>
         </Card>
 
-        <!-- 최근 거래 활동 -->
         <Card class="w-full" size="lg">
             <h3 class="text-lg font-bold mb-2">최근 거래 활동</h3>
             <div class="max-h-[400px] overflow-y-auto space-y-1">

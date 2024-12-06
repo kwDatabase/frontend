@@ -21,9 +21,8 @@
 	let showAuthModal = false;
 	let showEditModal = false;
 	let editingUser = null;
-    const apiBaseUrl = "http://localhost:3000"; // API Base URL
+    const apiBaseUrl = "http://localhost:3000/admin"; // API Base URL
 
-	// 사용자 목록 조회
 	async function fetchUsers() {
 		try {
 			const response = await fetch(`${apiBaseUrl}/users`);
@@ -33,7 +32,6 @@
 		}
 	}
 
-	// 권한 그룹 목록 조회
 	async function fetchAuthGroups() {
 		try {
 			const response = await fetch(`${apiBaseUrl}/users/auth-groups`);
@@ -43,7 +41,6 @@
 		}
 	}
 
-	// 권한 그룹 변경
 	async function updateUserAuthGroup() {
 		try {
 			const response = await fetch(`${apiBaseUrl}/users/auth-group`, {
@@ -66,7 +63,6 @@
 		}
 	}
 
-	// 사용자 정보 수정
 	async function updateUser() {
 		try {
 			const response = await fetch(`${apiBaseUrl}/users/${editingUser.Id}`, {
@@ -89,7 +85,6 @@
 		}
 	}
 
-	// 사용자 삭제
 	async function deleteUser(userId) {
 		if (confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
 			try {
@@ -106,31 +101,26 @@
 		}
 	}
 
-	// 날짜 포맷 함수
 	function formatDate(dateStr) {
 		if (!dateStr) return '';
 		return `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
 	}
 
-	// 검색 필터링
 	$: filteredUsers = users.filter(user => 
 		user.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 		user.Nic_Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
 		user.Auth_Group_Name?.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
-	// 상품 수에 따른 정렬 기능 추가
 	let sortBy = 'date'; // 'date' | 'products'
 
 	$: sortedUsers = [...filteredUsers].sort((a, b) => {
 		if (sortBy === 'products') {
 			return b.Product_Count - a.Product_Count;
 		}
-		// 기본값은 날짜순
 		return b.Enter_Date.localeCompare(a.Enter_Date);
 	});
 
-	// 정렬 버튼 추가
 	function toggleSort() {
 		sortBy = sortBy === 'date' ? 'products' : 'date';
 	}
@@ -219,7 +209,6 @@
 	</Table>
 </div>
 
-<!-- 권한 변경 모달 -->
 <Modal bind:open={showAuthModal} size="sm">
 	<div class="p-6">
 		<h3 class="mb-4 text-xl font-semibold">권한 그룹 변경</h3>
@@ -248,7 +237,6 @@
 	</div>
 </Modal>
 
-<!-- 사용자 정보 수정 모달 -->
 <Modal bind:open={showEditModal} size="sm">
 	<div class="p-6">
 		<h3 class="mb-4 text-xl font-semibold">사용자 정보 수정</h3>

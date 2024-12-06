@@ -10,7 +10,7 @@
   let editGroupName = '';
   let editingGroupAuths = [];
   
-  const apiBaseUrl = 'http://localhost:3000';
+  const apiBaseUrl = 'http://localhost:3000/admin';
 
   onMount(async () => {
     await Promise.all([

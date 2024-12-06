@@ -14,14 +14,12 @@
     let editingCategory = null;
     let editingSubCategory = null;
   
-    const apiBaseUrl = "http://localhost:3000"; // API Base URL
+    const apiBaseUrl = "http://localhost:3000/admin"; // API Base URL
   
-    // Fetch category on mount
     onMount(async () => {
       await fetchCategory();
     });
   
-    // Fetch category from the server
     const fetchCategory = async () => {
       try {
         const response = await fetch(`${apiBaseUrl}/category`);
@@ -32,7 +30,6 @@
       }
     };
   
-    // Add a new category
     const addCategory = async () => {
       if (newCategory.trim()) {
         if(newCategory.length > 20) {
@@ -63,7 +60,6 @@
     };
     let newSubCategories = {};
     
-    // 서브카테고리 추가 함수 수정
     const addSubCategory = async (categoryId) => {
       if (categoryId && newSubCategories[categoryId]?.trim()) {
         if(newSubCategories[categoryId].length > 20) {
@@ -77,7 +73,7 @@
             body: JSON.stringify({ name: newSubCategories[categoryId] }),
           });
           if (!response.ok) throw new Error("Failed to add subcategory");
-          newSubCategories[categoryId] = ""; // 해당 카테고리의 입력값만 초기화
+          newSubCategories[categoryId] = "";
           await fetchCategory();
         } catch (error) {
           console.error("Error adding subcategory:", error);
@@ -85,7 +81,6 @@
       }
     };
   
-    // Delete a category
     const deleteCategory = async (categoryId) => {
       try {
         const response = await fetch(`${apiBaseUrl}/category/${categoryId}`, {
@@ -98,7 +93,6 @@
       }
     };
   
-    // Delete a subcategory
     const deleteSubCategory = async (categoryId, subCategoryId) => {
       try {
         const response = await fetch(`${apiBaseUrl}/category/${categoryId}/subcategory/${subCategoryId}`, {
@@ -111,7 +105,6 @@
       }
     };
   
-    // Edit a category
     const saveEditCategory = async () => {
       if (editCategoryName.trim() && editingCategory) {
         if(editCategoryName.length > 20) {
@@ -134,7 +127,6 @@
       }
     };
   
-    // Edit a subcategory
     const saveEditSubCategory = async () => {
       if (editSubCategoryName.trim() && editingSubCategory) {
         if(editSubCategoryName.length > 20) {
