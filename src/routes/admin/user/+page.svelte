@@ -115,8 +115,25 @@
 	// 검색 필터링
 	$: filteredUsers = users.filter(user => 
 		user.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-		user.Nic_Name?.toLowerCase().includes(searchTerm.toLowerCase())
+		user.Nic_Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+		user.Auth_Group_Name?.toLowerCase().includes(searchTerm.toLowerCase())
 	);
+
+	// 상품 수에 따른 정렬 기능 추가
+	let sortBy = 'date'; // 'date' | 'products'
+
+	$: sortedUsers = [...filteredUsers].sort((a, b) => {
+		if (sortBy === 'products') {
+			return b.Product_Count - a.Product_Count;
+		}
+		// 기본값은 날짜순
+		return b.Enter_Date.localeCompare(a.Enter_Date);
+	});
+
+	// 정렬 버튼 추가
+	function toggleSort() {
+		sortBy = sortBy === 'date' ? 'products' : 'date';
+	}
 
 	onMount(() => {
 		fetchUsers();
@@ -127,7 +144,7 @@
 <div class="p-4">
 	<h1 class="text-2xl font-bold mb-4">사용자 관리</h1>
 
-	<div class="mb-4 flex items-center">
+	<div class="mb-4 flex items-center justify-between">
 		<div class="relative">
 			<SearchOutline class="absolute left-3 top-3 h-5 w-5 text-gray-500" />
 			<Input 
@@ -136,6 +153,13 @@
 				class="pl-10 w-80"
 			/>
 		</div>
+		<Button 
+			size="sm"
+			color="light"
+			on:click={toggleSort}
+		>
+			{sortBy === 'date' ? '날짜순' : '상품수순'} 정렬
+		</Button>
 	</div>
 
 	<Table>
@@ -143,15 +167,21 @@
 			<TableHeadCell>이름</TableHeadCell>
 			<TableHeadCell>닉네임</TableHeadCell>
 			<TableHeadCell>권한 그룹</TableHeadCell>
+			<TableHeadCell>등록 상품수</TableHeadCell>
 			<TableHeadCell>가입일</TableHeadCell>
 			<TableHeadCell>관리</TableHeadCell>
 		</TableHead>
 		<TableBody>
-			{#each filteredUsers as user}
+			{#each sortedUsers as user}
 				<TableBodyRow>
 					<TableBodyCell>{user.Name}</TableBodyCell>
 					<TableBodyCell>{user.Nic_Name || '-'}</TableBodyCell>
 					<TableBodyCell>{user.Auth_Group_Name || '권한 없음'}</TableBodyCell>
+					<TableBodyCell>
+						<div class="flex items-center gap-2">
+							<span class="font-medium">{user.Product_Count}</span>
+						</div>
+					</TableBodyCell>
 					<TableBodyCell>{formatDate(user.Enter_Date)}</TableBodyCell>
 					<TableBodyCell>
 						<div class="flex gap-2">

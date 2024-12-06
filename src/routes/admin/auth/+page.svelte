@@ -204,7 +204,7 @@
                     editGroupName = group.Name;
                     editingGroupAuths = group.Auths.map(auth => auth.Id);
                   }}
-                  color="light"
+                  color="blue"
                 >
                   수정
                 </Button>
