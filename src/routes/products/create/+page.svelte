@@ -38,10 +38,7 @@
             try {
                 const formData = new FormData();
                 console.log("addProduct entry");
-                // 이미지 파일 추가
                 formData.append("image_file", imageFile); // 실제 이미지 파일
-
-                // 다른 필드 추가
                 formData.append("title", newProduct.name);
                 formData.append("content", newProduct.content);
                 formData.append("price", newProduct.price);

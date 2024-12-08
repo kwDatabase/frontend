@@ -34,16 +34,10 @@
             return a.price - b.price;
           case "priceDesc":
             return b.price - a.price;
-          case "popularity":
-            return b.popularity - a.popularity;
           case "recent":
             return b.recentDate - a.recentDate;
           case "rating":
             return b.rating - a.rating; // 판매자 평점으로 정렬
-          case "discount":
-            return b.discount - a.discount;
-          case "stock":
-            return b.stock - a.stock;
           default:
             return 0;
         }
@@ -95,11 +89,8 @@
     <option value="default">정렬 기준 선택</option>
     <option value="priceAsc">가격 낮은 순</option>
     <option value="priceDesc">가격 높은 순</option>
-    <option value="popularity">인기 순</option>
     <option value="recent">신상품 순</option>
     <option value="rating">평점 순</option>
-    <option value="discount">할인율 순</option>
-    <option value="stock">재고량 순</option>
   </Select>
 
   <!-- 상품 등록 버튼 -->
