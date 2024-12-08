@@ -1,14 +1,15 @@
 import { error } from '@sveltejs/kit';
-import { PRODUCTS } from '../../../../lib/sampleData/products.js';
 
-export const load = ({ params }) => {
-    const selectedProduct = PRODUCTS.find((product) => product.id === Number(params.id)); // Number로 변환
-    console.log("parameter id: ", params.id);
+export const load = async ({ params }) => {
+    const response = await fetch(`http://localhost:3000/products/edit/${params.id}`); // 상품 수정 정보 API 호출
 
-    if (!selectedProduct) {
-        console.log("selectedProduct: ", selectedProduct);
-        throw error(404, 'Product not found');
+    if (!response.ok) {
+        throw error(response.status, 'Failed to load product');
     }
-    console.log("selectedProduct: ", selectedProduct);
-    return { product: selectedProduct }; // 반환할 때 'product'라는 이름으로 반환
+
+    const product = await response.json(); // 상품 데이터 가져오기
+
+    return {
+        data: { product } // 'data'라는 이름으로 export
+    };
 };

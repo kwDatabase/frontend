@@ -2,8 +2,6 @@
   import { Input, Button, Select } from "flowbite-svelte";
   import { goto } from "$app/navigation"; // goto를 import 합니다.
 
-  
-
   export let data;
   console.log("data: ", data);
 
@@ -77,7 +75,7 @@
     <option value="priceDesc">가격 높은 순</option>
     <option value="popularity">인기 순</option>
     <option value="recent">신상품 순</option>
-    <option value="rating">평점 순</option> <!-- 판매자 평점 -->
+    <option value="rating">평점 순</option>
     <option value="discount">할인율 순</option>
     <option value="stock">재고량 순</option>
   </Select>
@@ -90,7 +88,7 @@
     {#each filteredProducts as product}
       <div class="border rounded-lg overflow-hidden shadow-lg">
         <img
-          src={product.image}
+          src={`http://localhost:3000${product.image}`} 
           alt={product.name}
           class="w-full h-48 object-cover"
         />
@@ -98,9 +96,9 @@
           <h3 class="text-lg font-semibold">{product.name}</h3>
           <p class="text-gray-500">{product.price}원</p>
           <p class="text-gray-500">판매자: {product.seller}</p>
-          <p class="text-gray-500">판매자 평점: {product.rating} ⭐</p> <!-- 판매자 평점 표시 -->
+          <p class="text-gray-500">판매자 평점: {product.rating} ⭐</p>
           <div class="flex justify-end items-center">
-            <Button on:click={() => goto(`/products/${product.id}`)} color="green">조회</Button> <!-- 조회 버튼 추가 -->
+            <Button on:click={() => goto(`/products/${product.id}`)} color="green">조회</Button> 
           </div>
         </div>
       </div>

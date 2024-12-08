@@ -95,7 +95,8 @@
       >
       <div class="mt-4 product-detail-img-container">
         <img
-          src={updatedProduct.image}
+        
+          src={`http://localhost:3000${updatedProduct.image}`} 
           alt={updatedProduct.name}
           class="w-full h-48 object-cover rounded"
         />
@@ -128,7 +129,7 @@
       <input
         id="product-seller"
         type="text"
-        bind:value={updatedProduct.seller}
+        bind:value={updatedProduct.userName}
         class="border rounded p-2 w-full"
         disabled
       />
@@ -153,7 +154,7 @@
       >
       <textarea
         id="product-description"
-        bind:value={updatedProduct.description}
+        bind:value={updatedProduct.content}
         class="border rounded p-2 w-full"
         rows="4"
         disabled

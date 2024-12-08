@@ -1,158 +1,18 @@
-export const PRODUCTS = [
-    {
-        id: 1,
-        name: "중고 자전거",
-        price: 50000,
-        image: "/src/assets/images/bike.jpg",
-        seller: "홍길동",
-        rating: 4.5,
-        popularity: 10,
-        recentDate: new Date(2023, 1, 1),
-        discount: 0,
-        stock: 5,
-        description: "상태가 매우 좋고, 타는 데 문제가 없는 자전거입니다. 자전거에 관련된 모든 부품이 포함되어 있습니다.",
-        reviews: [
-            {
-                reviewer: "김영희",
-                content: "자전거 상태가 매우 좋습니다! 추천합니다.",
-                date: new Date(2023, 1, 15),
-                rating: 4.5,
-            },
-            {
-                reviewer: "이철수",
-                content: "가격이 저렴하고 만족스럽습니다.",
-                date: new Date(2023, 2, 5),
-                rating: 5.0,
-            },
-        ],
-        inquiries: [
-            {
-                asker: "최민수",
-                content: "자전거의 배터리 상태는 어떤가요?",
-                date: new Date(2023, 1, 20),
-            },
-            {
-                asker: "이서준",
-                content: "배송은 얼마나 걸리나요?",
-                date: new Date(2023, 2, 1),
-            },
-        ],
-    },
-    {
-        id: 2,
-        name: "중고 책",
-        price: 10000,
-        image: "/src/assets/images/book.jpg",
-        seller: "김철수",
-        rating: 3.8,
-        popularity: 20,
-        recentDate: new Date(2023, 5, 1),
-        discount: 10,
-        stock: 15,
-        description: "상태가 괜찮은 중고 책입니다. 읽고 나서 판매하는 책입니다.",
-        reviews: [
-            {
-                reviewer: "박지민",
-                content: "책 상태가 괜찮아요. 감사합니다.",
-                date: new Date(2023, 5, 10),
-                rating: 4.0,
-            },
-        ],
-        inquiries: [
-            {
-                asker: "유진",
-                content: "책의 페이지 수는 얼마인가요?",
-                date: new Date(2023, 5, 12),
-            },
-            {
-                asker: "민서",
-                content: "책을 반품할 수 있나요?",
-                date: new Date(2023, 5, 15),
-            },
-        ],
-    },
-    {
-        id: 3,
-        name: "중고 노트북",
-        price: 300000,
-        image: "/src/assets/images/lggram.jpeg",
-        seller: "이영희",
-        rating: 4.0,
-        popularity: 5,
-        recentDate: new Date(2023, 3, 1),
-        discount: 5,
-        stock: 3,
-        description: "이 노트북은 성능이 뛰어나며, 사용감이 거의 없는 상태입니다. 배터리 수명이 좋습니다.",
-        reviews: [],
-        inquiries: [
-            {
-                asker: "정우",
-                content: "노트북의 배터리 수명은 어떻게 되나요?",
-                date: new Date(2023, 3, 5),
-            },
-        ],
-    },
-    {
-        id: 4,
-        name: "중고 핸드폰",
-        price: 200000,
-        image: "/src/assets/images/iphonese.jpg",
-        seller: "박민수",
-        rating: 4.7,
-        popularity: 15,
-        recentDate: new Date(2023, 6, 1),
-        discount: 20,
-        stock: 10,
-        description: "상태가 좋은 중고 핸드폰입니다. 스크래치가 적어 사용하기 좋은 제품입니다.",
-        reviews: [],
-        inquiries: [
-            {
-                asker: "수빈",
-                content: "핸드폰의 스크래치 상태는 어떤가요?",
-                date: new Date(2023, 6, 2),
-            },
-        ],
-    },
-    {
-        id: 5,
-        name: "아이폰 16 pro",
-        price: 1000000,
-        image: "/src/assets/images/iphone.jpeg",
-        seller: "박만수",
-        rating: 2.7,
-        popularity: 15,
-        recentDate: new Date(2023, 6, 1),
-        discount: 0,
-        stock: 1,
-        description: "최신 아이폰 모델로, 외관에 약간의 사용감이 있습니다.",
-        reviews: [],
-        inquiries: [
-            {
-                asker: "하늘",
-                content: "이 모델의 색상은 무엇이 있나요?",
-                date: new Date(2023, 6, 3),
-            },
-        ],
-    }, 
-    {
-        id: 6,
-        name: "갤럭시 222",
-        price: 1000000,
-        image: "/src/assets/images/glaxy.jpg",
-        seller: "억수수",
-        rating: 4.6,
-        popularity: 15,
-        recentDate: new Date(2023, 6, 1),
-        discount: 0,
-        stock: 1,
-        description: "갤럭시 최신 모델로, 성능이 뛰어나고 상태가 좋습니다.",
-        reviews: [],
-        inquiries: [
-            {
-                asker: "지민",
-                content: "갤럭시 222의 메모리 용량은 얼마인가요?",
-                date: new Date(2023, 6, 4),
-            },
-        ],
+const API_URL = 'http://localhost:3000/products'; // API URL 설정
+
+export async function fetchProducts() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+            throw new Error('네트워크 응답이 좋지 않습니다.');
+        }
+        const products = await response.json();
+        return products;
+    } catch (error) {
+        console.error('상품 데이터를 가져오는 중 오류 발생:', error);
+        return [];
     }
-];
+}
+
+// fetchProducts 함수를 PRODUCTS라는 이름으로 export
+export const PRODUCTS = fetchProducts;
