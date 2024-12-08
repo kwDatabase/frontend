@@ -1,7 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
-/** @type {import('vite').UserConfig} */
 const config = {
 	plugins: [sveltekit()],
 	resolve: {
