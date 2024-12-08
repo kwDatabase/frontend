@@ -37,6 +37,7 @@
   <NavUl>
     <NavLi href="/" active={true}>Home</NavLi>
     <NavLi href="/admin">Admin</NavLi>
+      <NavLi href="/products">Products</NavLi>
     {#if loggedIn}
       <NavLi href="/mypage">MyPage</NavLi>
       <NavLi on:click={logout}>Logout</NavLi>
