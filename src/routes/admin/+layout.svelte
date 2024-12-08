@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import { isLoggedIn, userInfo } from '$src/stores/auth';
   
   const routes = [
     { label: '사용자 관리', href: '/admin/user' },
@@ -11,15 +12,33 @@
     { label: '상품 관리', href: '/admin/product' },
     { label: '대시보드', href: '/admin/dashboard' },
   ];
+  
   $: activeUrl = $page.url.pathname;
 
   let spanClass = 'pl-2 self-center text-md text-gray-900 whitespace-nowrap dark:text-white';
   var activeClass = "flex items-center p-2 text-base font-normal text-gray-900 bg-primary-200 dark:bg-primary-700 rounded-lg dark:text-white hover:bg-primary-100 dark:hover:bg-primary-700";
 
   onMount(() => {
-    if (activeUrl === '/admin') {
-      goto('/admin/user');
-    }
+    const unsubscribeLogin = isLoggedIn.subscribe(value => {
+      if (!value) {
+        goto('/');
+      }
+    });
+
+    const unsubscribeUser = userInfo.subscribe(value => {
+      console.log(value)
+      if (!value || value.id !== 'admin') {
+        goto('/');
+      }
+      else if (activeUrl === '/admin') {
+        goto('/admin/user');
+      }
+    });
+
+    return () => {
+      unsubscribeLogin();
+      unsubscribeUser();
+    };
   });
 </script>
 

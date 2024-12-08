@@ -27,7 +27,8 @@
   }
 </script>
 
-<Navbar class="border border-gray-700">
+<div class="flex flex-col h-screen">
+<Navbar class="border-b border-gray-300">
   <NavBrand href="/">
     <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Market</span>
   </NavBrand>
@@ -36,16 +37,19 @@
   </div>
   <NavUl>
     <NavLi href="/" active={true}>Home</NavLi>
-    <NavLi href="/admin">Admin</NavLi>
-      <NavLi href="/products">Products</NavLi>
+    <NavLi href="/products">Products</NavLi>
     {#if loggedIn}
-      <NavLi href="/mypage">MyPage</NavLi>
-      <NavLi on:click={logout}>Logout</NavLi>
+    <NavLi href="/mypage">MyPage</NavLi>
+    <NavLi on:click={logout}>Logout</NavLi>
     {:else}
-      <NavLi on:click={goToLogin}>Login</NavLi>
+    <NavLi on:click={goToLogin}>Login</NavLi>
+    {/if}
+    {#if loggedIn && user.id == "admin"}
+    <NavLi href="/admin">Admin</NavLi>
     {/if}
   </NavUl>
 </Navbar>
 <div class="flex-1 overflow-auto">
   <slot></slot>
+</div>
 </div>
