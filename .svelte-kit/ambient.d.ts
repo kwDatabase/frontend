@@ -26,22 +26,6 @@
  * ```
  */
 declare module '$env/static/private' {
-	export const ALLUSERSPROFILE: string;
-	export const APPDATA: string;
-	export const ChocolateyInstall: string;
-	export const ChocolateyLastPathUpdate: string;
-	export const CHROME_CRASHPAD_PIPE_NAME: string;
-	export const CommonProgramFiles: string;
-	export const CommonProgramW6432: string;
-	export const COMPUTERNAME: string;
-	export const ComSpec: string;
-	export const DriverData: string;
-	export const ELECTRON_NO_ASAR: string;
-	export const ELECTRON_RUN_AS_NODE: string;
-	export const HOMEDRIVE: string;
-	export const HOMEPATH: string;
-	export const LOCALAPPDATA: string;
-	export const LOGONSERVER: string;
 	export const TERM_PROGRAM: string;
 	export const NODE: string;
 	export const INIT_CWD: string;
@@ -51,6 +35,7 @@ declare module '$env/static/private' {
 	export const npm_config_global_prefix: string;
 	export const TERM_PROGRAM_VERSION: string;
 	export const ZDOTDIR: string;
+	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
 	export const MallocNanoZone: string;
 	export const COLOR: string;
 	export const npm_config_noproxy: string;
@@ -64,9 +49,9 @@ declare module '$env/static/private' {
 	export const PATH: string;
 	export const npm_package_json: string;
 	export const _: string;
+	export const LaunchInstanceID: string;
 	export const npm_config_userconfig: string;
 	export const npm_config_init_module: string;
-	export const USER_ZDOTDIR: string;
 	export const __CFBundleIdentifier: string;
 	export const npm_command: string;
 	export const PWD: string;
@@ -76,6 +61,7 @@ declare module '$env/static/private' {
 	export const npm_package_name: string;
 	export const LANG: string;
 	export const ANDROID_SDK: string;
+	export const LOCAL_GIT_DIRECTORY: string;
 	export const npm_config_npm_version: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 	export const XPC_FLAGS: string;
@@ -83,8 +69,8 @@ declare module '$env/static/private' {
 	export const npm_package_version: string;
 	export const XPC_SERVICE_NAME: string;
 	export const VSCODE_INJECTION: string;
-	export const SHLVL: string;
 	export const HOME: string;
+	export const SHLVL: string;
 	export const VSCODE_GIT_ASKPASS_MAIN: string;
 	export const npm_config_cache: string;
 	export const LOGNAME: string;
@@ -93,45 +79,11 @@ declare module '$env/static/private' {
 	export const npm_config_user_agent: string;
 	export const VSCODE_GIT_ASKPASS_NODE: string;
 	export const GIT_ASKPASS: string;
+	export const SECURITYSESSIONID: string;
 	export const npm_node_execpath: string;
 	export const npm_config_prefix: string;
 	export const COLORTERM: string;
 	export const NODE_ENV: string;
-	export const NUMBER_OF_PROCESSORS: string;
-	export const OneDrive: string;
-	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
-	export const OS: string;
-	export const Path: string;
-	export const PATHEXT: string;
-	export const PROCESSOR_ARCHITECTURE: string;
-	export const PROCESSOR_IDENTIFIER: string;
-	export const PROCESSOR_LEVEL: string;
-	export const PROCESSOR_REVISION: string;
-	export const ProgramData: string;
-	export const ProgramFiles: string;
-	export const ProgramW6432: string;
-	export const PSModulePath: string;
-	export const PUBLIC: string;
-	export const SESSIONNAME: string;
-	export const SystemDrive: string;
-	export const SystemRoot: string;
-	export const TEMP: string;
-	export const TMP: string;
-	export const USERDOMAIN: string;
-	export const USERDOMAIN_ROAMINGPROFILE: string;
-	export const USERNAME: string;
-	export const USERPROFILE: string;
-	export const VSCODE_CODE_CACHE_PATH: string;
-	export const VSCODE_CRASH_REPORTER_PROCESS_TYPE: string;
-	export const VSCODE_CWD: string;
-	export const VSCODE_DOTNET_INSTALL_TOOL_ORIGINAL_HOME: string;
-	export const VSCODE_ESM_ENTRYPOINT: string;
-	export const VSCODE_HANDLES_UNCAUGHT_ERRORS: string;
-	export const VSCODE_IPC_HOOK: string;
-	export const VSCODE_L10N_BUNDLE_LOCATION: string;
-	export const VSCODE_NLS_CONFIG: string;
-	export const VSCODE_PID: string;
-	export const windir: string;
 }
 
 /**
@@ -163,22 +115,6 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
-		ALLUSERSPROFILE: string;
-		APPDATA: string;
-		ChocolateyInstall: string;
-		ChocolateyLastPathUpdate: string;
-		CHROME_CRASHPAD_PIPE_NAME: string;
-		CommonProgramFiles: string;
-		CommonProgramW6432: string;
-		COMPUTERNAME: string;
-		ComSpec: string;
-		DriverData: string;
-		ELECTRON_NO_ASAR: string;
-		ELECTRON_RUN_AS_NODE: string;
-		HOMEDRIVE: string;
-		HOMEPATH: string;
-		LOCALAPPDATA: string;
-		LOGONSERVER: string;
 		TERM_PROGRAM: string;
 		NODE: string;
 		INIT_CWD: string;
@@ -188,6 +124,7 @@ declare module '$env/dynamic/private' {
 		npm_config_global_prefix: string;
 		TERM_PROGRAM_VERSION: string;
 		ZDOTDIR: string;
+		ORIGINAL_XDG_CURRENT_DESKTOP: string;
 		MallocNanoZone: string;
 		COLOR: string;
 		npm_config_noproxy: string;
@@ -201,9 +138,9 @@ declare module '$env/dynamic/private' {
 		PATH: string;
 		npm_package_json: string;
 		_: string;
+		LaunchInstanceID: string;
 		npm_config_userconfig: string;
 		npm_config_init_module: string;
-		USER_ZDOTDIR: string;
 		__CFBundleIdentifier: string;
 		npm_command: string;
 		PWD: string;
@@ -213,6 +150,7 @@ declare module '$env/dynamic/private' {
 		npm_package_name: string;
 		LANG: string;
 		ANDROID_SDK: string;
+		LOCAL_GIT_DIRECTORY: string;
 		npm_config_npm_version: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 		XPC_FLAGS: string;
@@ -220,8 +158,8 @@ declare module '$env/dynamic/private' {
 		npm_package_version: string;
 		XPC_SERVICE_NAME: string;
 		VSCODE_INJECTION: string;
-		SHLVL: string;
 		HOME: string;
+		SHLVL: string;
 		VSCODE_GIT_ASKPASS_MAIN: string;
 		npm_config_cache: string;
 		LOGNAME: string;
@@ -230,45 +168,11 @@ declare module '$env/dynamic/private' {
 		npm_config_user_agent: string;
 		VSCODE_GIT_ASKPASS_NODE: string;
 		GIT_ASKPASS: string;
+		SECURITYSESSIONID: string;
 		npm_node_execpath: string;
 		npm_config_prefix: string;
 		COLORTERM: string;
 		NODE_ENV: string;
-		NUMBER_OF_PROCESSORS: string;
-		OneDrive: string;
-		ORIGINAL_XDG_CURRENT_DESKTOP: string;
-		OS: string;
-		Path: string;
-		PATHEXT: string;
-		PROCESSOR_ARCHITECTURE: string;
-		PROCESSOR_IDENTIFIER: string;
-		PROCESSOR_LEVEL: string;
-		PROCESSOR_REVISION: string;
-		ProgramData: string;
-		ProgramFiles: string;
-		ProgramW6432: string;
-		PSModulePath: string;
-		PUBLIC: string;
-		SESSIONNAME: string;
-		SystemDrive: string;
-		SystemRoot: string;
-		TEMP: string;
-		TMP: string;
-		USERDOMAIN: string;
-		USERDOMAIN_ROAMINGPROFILE: string;
-		USERNAME: string;
-		USERPROFILE: string;
-		VSCODE_CODE_CACHE_PATH: string;
-		VSCODE_CRASH_REPORTER_PROCESS_TYPE: string;
-		VSCODE_CWD: string;
-		VSCODE_DOTNET_INSTALL_TOOL_ORIGINAL_HOME: string;
-		VSCODE_ESM_ENTRYPOINT: string;
-		VSCODE_HANDLES_UNCAUGHT_ERRORS: string;
-		VSCODE_IPC_HOOK: string;
-		VSCODE_L10N_BUNDLE_LOCATION: string;
-		VSCODE_NLS_CONFIG: string;
-		VSCODE_PID: string;
-		windir: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
