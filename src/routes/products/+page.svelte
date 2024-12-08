@@ -56,6 +56,28 @@
     sortOption = event.target.value;
     sortProducts(); // 정렬 기준에 따라 상품 정렬
   }
+
+    // 상품 조회수 증가 요청
+    async function incrementViewCount(productId) {
+    try {
+      const response = await fetch(`http://localhost:3000/products/${productId}/views`, {
+        method: 'PUT',
+      });
+
+      if (!response.ok) {
+        throw new Error('조회수 업데이트에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  // 조회 버튼 클릭 시 호출
+  function handleViewProduct(product) {
+    incrementViewCount(product.id); // 조회수 증가 요청
+    goto(`/products/${product.id}`); // 상품 상세 페이지로 이동
+  }
+
 </script>
 
 <main>
@@ -98,7 +120,7 @@
           <p class="text-gray-500">판매자: {product.seller}</p>
           <p class="text-gray-500">판매자 평점: {product.rating} ⭐</p>
           <div class="flex justify-end items-center">
-            <Button on:click={() => goto(`/products/${product.id}`)} color="green">조회</Button> 
+            <Button on:click={() => handleViewProduct(product)} color="green">조회</Button> 
           </div>
         </div>
       </div>
