@@ -19,9 +19,34 @@
   let selectedRating = 0; // 선택된 별점
   let activeTab = "reviews"; // 현재 활성화된 탭 (reviews, inquiries)
 
-  // 대댓글 입력값
-  let newReply = ""; // 대댓글 입력값
-  let currentInquiryIndex = null; // 현재 대댓글을 작성할 문의 인덱스
+  let editingInquiryId = null; // 현재 수정 중인 문의 ID
+  let editingInquiryContent = ""; // 수정할 문의 내용
+
+  let currentInquiryIndex = null; // 대댓글 입력 중인 문의 ID
+  let newReply = ""; // 신규 대댓글 입력값
+  let editingReplyContent = ""; // 수정할 대댓글 내용
+  let editingReplyId = null; // 현재 수정 중인 대댓글 ID
+
+  function startEditReply(inquiry) {
+    editingReplyId = inquiry.id; // 수정할 대댓글 ID 설정
+    editingReplyContent = inquiry.replyContent; // 현재 대댓글 내용 설정
+  }
+
+  function cancelEditReply() {
+    editingReplyId = null; // 수정 모드 종료
+  }
+
+  // 문의 수정 시작 함수
+  function startEditInquiry(inquiry) {
+    editingInquiryId = inquiry.id; // 수정 중인 문의 ID 설정
+    editingInquiryContent = inquiry.content; // 수정할 내용 설정
+  }
+
+  // 문의 수정 취소 함수
+  function cancelEditInquiry() {
+    editingInquiryId = null; // 수정 중인 문의 ID 초기화
+    editingInquiryContent = ""; // 수정할 내용 초기화
+  }
 
   // 날짜 변환 함수
   function parseDate(dateString) {
@@ -34,6 +59,14 @@
 
     // ISO 형식으로 변환
     return new Date(`${year}-${month}-${day}T${hours}:${minutes}:00`);
+  }
+
+  // 사용자 평균 평점 계산 함수
+  function calculateAverageRating(reviews) {
+    if (reviews.length === 0) return 0; // 후기가 없으면 0 반환
+
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    return (totalRating / reviews.length).toFixed(1); // 소수점 첫째자리까지 반올림
   }
 
   // 후기 추가 API
@@ -67,6 +100,12 @@
           date: new Date().toISOString(),
           rating: newRating,
         });
+
+        // 사용자 평균 평점 업데이트
+        updatedProduct.userRating = calculateAverageRating(
+          updatedProduct.reviews,
+        );
+
         newReview = ""; // 입력 필드 초기화
         newRating = 0; // 별점 초기화
         console.log("Current Reviews: ", updatedProduct.reviews);
@@ -78,45 +117,6 @@
       }
     } else {
       alert("후기와 별점을 입력하세요.");
-    }
-  }
-  // 문의 추가 API
-  async function addInquiry() {
-    if (newInquiry.trim() !== "") {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/products/${updatedProduct.id}/inquiries`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              asker: "Anonymous",
-              content: newInquiry,
-            }),
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error("문의 추가에 실패했습니다.");
-        }
-
-        const inquiryData = await response.json();
-        updatedProduct.inquiries.push({
-          id: inquiryData.id, // 서버에서 반환된 ID 사용
-          asker: "Anonymous",
-          content: newInquiry,
-          date: new Date(),
-          replies: [],
-        });
-        newInquiry = ""; // 입력 필드 초기화
-        console.log("Current Inquiries: ", updatedProduct.inquiries);
-      } catch (error) {
-        alert(error.message);
-      }
-    } else {
-      alert("문의 내용을 입력하세요.");
     }
   }
 
@@ -161,20 +161,12 @@
     }
   }
 
-  // 수정 상태 초기화 함수
-  function cancelEdit() {
-    editingReviewId = null; // 수정 중인 후기 ID 초기화
-    editingReviewContent = ""; // 수정할 내용 초기화
-    editingRating = 0; // 수정할 별점 초기화
-  }
-
   // 후기 삭제 API
   async function deleteReview(reviewId) {
     if (confirm("정말로 이 후기를 삭제하시겠습니까?")) {
       try {
-        console.log("reviewId : ", reviewId);
         const response = await fetch(
-          `http://localhost:3000/products/${updatedProduct.id}/reviews/${reviewId}`, // reviewId 사용
+          `http://localhost:3000/products/${updatedProduct.id}/reviews/${reviewId}`,
           {
             method: "DELETE",
           },
@@ -187,7 +179,12 @@
         // 리뷰를 삭제한 후, updatedProduct.reviews에서 해당 리뷰를 제거
         updatedProduct.reviews = updatedProduct.reviews.filter(
           (review) => review.id !== reviewId,
-        ); // ID로 필터링하여 제거
+        );
+
+        // 사용자 평균 평점 업데이트
+        updatedProduct.userRating = calculateAverageRating(
+          updatedProduct.reviews,
+        );
         console.log("Current Reviews: ", updatedProduct.reviews);
       } catch (error) {
         alert(error.message);
@@ -195,23 +192,75 @@
     }
   }
 
-  // 문의 수정 API
-  async function updateInquiry(inquiryIndex) {
-    const content = prompt(
-      "수정할 문의 내용을 입력하세요:",
-      updatedProduct.inquiries[inquiryIndex].content,
-    );
+  // 수정 상태 초기화 함수
+  function cancelEdit() {
+    editingReviewId = null; // 수정 중인 후기 ID 초기화
+    editingReviewContent = ""; // 수정할 내용 초기화
+    editingRating = 0; // 수정할 별점 초기화
+  }
 
-    if (content) {
+  // 문의 추가 API
+  async function addInquiry() {
+    if (newInquiry.trim() !== "") {
       try {
         const response = await fetch(
-          `http://localhost:3000/products/${updatedProduct.id}/inquiries/${inquiryIndex}`,
+          `http://localhost:3000/products/${updatedProduct.id}/inquiries`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              asker: "Anonymous",
+              content: newInquiry,
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("문의 추가에 실패했습니다.");
+        }
+
+        const inquiryData = await response.json();
+        updatedProduct.inquiries.push({
+          id: inquiryData.id, // 서버에서 반환된 ID 사용
+          asker: "Anonymous",
+          content: newInquiry,
+          date: new Date(),
+          replies: [],
+        });
+        newInquiry = ""; // 입력 필드 초기화
+
+        // 페이지 새로고침
+        window.location.reload(); // 새로고침
+
+        console.log("Current Inquiries: ", updatedProduct.inquiries);
+      } catch (error) {
+        alert(error.message);
+      }
+    } else {
+      alert("문의 내용을 입력하세요.");
+    }
+  }
+
+  // 문의 수정 API
+  async function updateInquiry(inquiryId) {
+    const inquiry = updatedProduct.inquiries.find((i) => i.id === inquiryId);
+    if (!inquiry) {
+      alert("해당 문의를 찾을 수 없습니다.");
+      return;
+    }
+
+    if (editingInquiryContent.trim() !== "") {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/products/${updatedProduct.id}/inquiries/${inquiryId}`,
           {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ content }),
+            body: JSON.stringify({ content: editingInquiryContent }),
           },
         );
 
@@ -219,20 +268,24 @@
           throw new Error("문의 수정에 실패했습니다.");
         }
 
-        updatedProduct.inquiries[inquiryIndex].content = content;
+        // 문의 수정
+        inquiry.content = editingInquiryContent;
         console.log("Current Inquiries: ", updatedProduct.inquiries);
+        cancelEditInquiry(); // 수정 후 상태 초기화
       } catch (error) {
         alert(error.message);
       }
+    } else {
+      alert("문의 내용을 입력하세요.");
     }
   }
 
   // 문의 삭제 API
-  async function deleteInquiry(inquiryIndex) {
+  async function deleteInquiry(inquiryId) {
     if (confirm("정말로 이 문의를 삭제하시겠습니까?")) {
       try {
         const response = await fetch(
-          `http://localhost:3000/products/${updatedProduct.id}/inquiries/${inquiryIndex}`,
+          `http://localhost:3000/products/${updatedProduct.id}/inquiries/${inquiryId}`,
           {
             method: "DELETE",
           },
@@ -242,8 +295,8 @@
           throw new Error("문의 삭제에 실패했습니다.");
         }
 
-        updatedProduct.inquiries.splice(inquiryIndex, 1);
-        console.log("Current Inquiries: ", updatedProduct.inquiries);
+        // 삭제 성공 후, 페이지 새로고침
+        window.location.reload(); // 페이지 새로고침
       } catch (error) {
         alert(error.message);
       }
@@ -251,27 +304,120 @@
   }
 
   // 대댓글 추가 API
-  function addReply(inquiryIndex) {
+  async function addReply(inquiryId) {
     if (newReply.trim() !== "") {
-      updatedProduct.inquiries[inquiryIndex].replies.push({
-        responder: "작성자", // 대댓글 작성자 (예시로 '작성자'로 설정)
-        content: newReply,
-        date: new Date(),
-      });
-      newReply = ""; // 입력 필드 초기화
-      currentInquiryIndex = null; // 대댓글 입력 필드 닫기
-      console.log(
-        "Current Replies: ",
-        updatedProduct.inquiries[inquiryIndex].replies,
-      );
+      try {
+        const response = await fetch(
+          `http://localhost:3000/products/${updatedProduct.id}/inquiries/${inquiryId}/reply`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              responder: "Anonymous",
+              content: newReply,
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("대댓글 추가에 실패했습니다.");
+        }
+
+        const inquiry = updatedProduct.inquiries.find(
+          (i) => i.id === inquiryId,
+        );
+        inquiry.reply_content = newReply; // 대댓글 내용 업데이트
+        newReply = ""; // 대댓글 입력 필드 초기화
+
+        // 대댓글 추가 성공 후
+        location.reload(); // 화면 새로고침
+      } catch (error) {
+        alert(error.message);
+      }
     } else {
       alert("대댓글 내용을 입력하세요.");
+    }
+  }
+
+  // 대댓글 수정 API
+  async function updateReply(inquiryId) {
+    if (editingReplyContent.trim() !== "") {
+      try {
+        const now = new Date();
+        const formattedDate = now.toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD 형식
+        const formattedTime = now.toTimeString().slice(0, 5).replace(":", ""); // HHMM 형식
+
+        const response = await fetch(
+          `http://localhost:3000/products/${updatedProduct.id}/inquiries/${inquiryId}/reply`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              content: editingReplyContent,
+              reply_date: formattedDate, // 날짜 추가
+              reply_time: formattedTime, // 시간 추가
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("대댓글 수정에 실패했습니다.");
+        }
+
+        // 대댓글 내용 업데이트
+        const inquiry = updatedProduct.inquiries.find(
+          (i) => i.id === inquiryId,
+        );
+        inquiry.reply_content = editingReplyContent; // 대댓글 내용 업데이트
+        inquiry.replyDate = formattedDate; // 날짜 업데이트
+        inquiry.replyTime = formattedTime; // 시간 업데이트
+        editingReplyContent = ""; // 수정 입력 필드 초기화
+        editingReplyId = null; // 수정 모드 종료
+
+        location.reload(); // 화면 새로고침
+      } catch (error) {
+        alert(error.message);
+      }
+    } else {
+      alert("대댓글 내용을 입력하세요.");
+    }
+  }
+
+  // 대댓글 삭제 API
+  async function deleteReply(inquiryId) {
+    if (confirm("정말로 대댓글을 삭제하시겠습니까?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/products/${updatedProduct.id}/inquiries/${inquiryId}/reply`,
+          {
+            method: "DELETE",
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("대댓글 삭제에 실패했습니다.");
+        }
+
+        const inquiry = updatedProduct.inquiries.find(
+          (i) => i.id === inquiryId,
+        );
+        inquiry.reply_content = null; // 대댓글 내용 초기화
+        location.reload(); // 화면 새로고침
+      } catch (error) {
+        alert(error.message);
+      }
     }
   }
 
   function switchTab(tab) {
     activeTab = tab; // 활성화된 탭 전환
   }
+
+  console.log(updatedProduct.inquiries);
 </script>
 
 <main>
@@ -476,48 +622,119 @@
       {#each updatedProduct.inquiries as inquiry, index}
         <li class="border-b py-2">
           <strong>{inquiry.asker} ID: {inquiry.userId}</strong>
-          {inquiry.content}
-          <br />
-          <span class="text-gray-500"
-            >{parseDate(inquiry.date).toLocaleDateString()}</span
-          >
-          <button
-            on:click={() => (currentInquiryIndex = index)}
-            class="text-blue-500 ml-2">답변하기</button
-          >
-          {#if currentInquiryIndex === index}
-            <div class="mt-2">
+
+          {#if editingInquiryId === inquiry.id}
+            <div>
               <input
                 type="text"
-                bind:value={newReply}
-                placeholder="답변을 입력하세요..."
+                bind:value={editingInquiryContent}
                 class="border rounded p-2 w-full"
               />
               <button
-                on:click={() => addReply(index)}
+                on:click={() => updateInquiry(inquiry.id)}
                 class="bg-green-500 text-white p-2 rounded mt-2"
-                >답변 추가</button
               >
+                수정하기
+              </button>
+              <button
+                on:click={cancelEditInquiry}
+                class="bg-gray-300 text-black p-2 rounded mt-2"
+              >
+                수정 취소
+              </button>
+            </div>
+          {:else}
+            <div>
+              {inquiry.content}
+              <br />
+              <span class="text-gray-500"
+                >{parseDate(inquiry.date).toLocaleDateString()}</span
+              >
+              <div class="flex space-x-2 mt-2">
+                <button
+                  on:click={() => startEditInquiry(inquiry)}
+                  class="text-blue-500">수정</button
+                >
+                <button
+                  on:click={() => deleteInquiry(inquiry.id)}
+                  class="text-red-500">삭제</button
+                >
+              </div>
             </div>
           {/if}
-          <div class="flex space-x-2 mt-2">
-            <button on:click={() => updateInquiry(index)} class="text-blue-500"
-              >수정</button
-            >
-            <button on:click={() => deleteInquiry(index)} class="text-red-500"
-              >삭제</button
-            >
-          </div>
-          <ul>
-            {#each inquiry.replies as reply}
-              <li class="ml-4 border-l pl-2 py-1">
-                <strong>{reply.responder}</strong>: {reply.content} <br />
-                <span class="text-gray-500"
-                  >{parseDate(reply.date).toLocaleDateString()}</span
-                >
-              </li>
-            {/each}
-          </ul>
+
+          <!-- 문의 답변 부분 -->
+          {#if inquiry.replyContent}
+            <div class="mt-2 pl-4 border-l-4 border-blue-500">
+              {#if editingReplyId === inquiry.id}
+                <!-- 수정 모드 체크 -->
+                <strong>→ 문의 답변: </strong>
+                <input
+                  type="text"
+                  bind:value={editingReplyContent}
+                  class="border rounded p-2 w-full"
+                />
+                <div class="mt-2">
+                  <button
+                    on:click={() => updateReply(inquiry.id)}
+                    class="bg-green-500 text-white p-2 rounded mt-2"
+                  >
+                    수정 완료
+                  </button>
+                  <button
+                    on:click={() => cancelEditReply()}
+                    class="bg-gray-300 text-black p-2 rounded mt-2"
+                  >
+                    수정 취소
+                  </button>
+                </div>
+              {:else}
+                <strong>→ 문의 답변: </strong>
+                {inquiry.replyContent}
+                <br />
+                <span class="text-gray-500 ml-4">
+                  작성자: {inquiry.userId} | 작성일: {inquiry.replyDate 
+                    ? parseDate(inquiry.replyDate)?.toLocaleDateString() || "작성일 없음"
+                    : "작성일 없음"}
+              </span>
+                <div class="mt-2 ml-4">
+                  <button
+                    on:click={() => {
+                      startEditReply(inquiry); // 수정 모드로 전환
+                    }}
+                    class="text-blue-500 ml-2">수정</button
+                  >
+                  <button
+                    on:click={() => deleteReply(inquiry.id)}
+                    class="text-red-500 ml-2">삭제</button
+                  >
+                </div>
+              {/if}
+            </div>
+          {:else}
+            <div class="mt-2">
+              <button
+                on:click={() => (currentInquiryIndex = inquiry.id)}
+                class="text-blue-500 ml-2">답변하기</button
+              >
+              {#if currentInquiryIndex === inquiry.id}
+                <div class="mt-2">
+                  <input
+                    type="text"
+                    bind:value={newReply}
+                    placeholder="답변을 입력하세요..."
+                    class="border rounded p-2 w-full"
+                  />
+                  <button
+                    on:click={() => addReply(inquiry.id)}
+                    class="bg-green-500 text-white p-2 rounded mt-2"
+                  >
+                    문의 답변 추가
+                  </button>
+                </div>
+              {/if}
+            </div>
+          {/if}
         </li>
       {/each}
     </ul>
@@ -529,7 +746,6 @@
       placeholder="문의 내용을 입력하세요..."
       class="border rounded p-2 w-full"
     />
-
     <button
       on:click={addInquiry}
       class="bg-green-500 text-white p-2 rounded mt-2">문의 추가</button
