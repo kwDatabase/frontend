@@ -15,6 +15,7 @@
     export let data;
     export let categories = data.categories; // load 함수에서 전달된 카테고리 배열
     export let subCategories = data.subCategories; // load 함수에서 전달된 서브 카테고리 배열
+
     let filteredSubCategories = []; // 선택된 카테고리에 해당하는 서브 카테고리 저장
 
     // 카테고리 선택 시 서브 카테고리 필터링
@@ -52,7 +53,7 @@
                         body: formData,
                     },
                 );
-                    
+
                 console.log("form data contents");
                 for (const [key, value] of formData.entries()) {
                     console.log(`${key}: ${value}`);
@@ -78,6 +79,7 @@
         }
     }
 
+    // 이미지 미리보기
     function handleImageChange(event) {
         const file = event.target.files[0];
         if (file) {

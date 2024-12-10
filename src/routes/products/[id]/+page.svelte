@@ -81,7 +81,7 @@
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              user_id: "Anonymous",
+              user_id: "qwer",
               content: newReview,
               rating: newRating,
             }),
@@ -95,7 +95,7 @@
         const reviewData = await response.json();
         updatedProduct.reviews.push({
           id: reviewData.id,
-          userId: "Anonymous",
+          userId: "qwer",
           content: newReview,
           date: new Date().toISOString(),
           rating: newRating,
@@ -693,10 +693,11 @@
                 {inquiry.replyContent}
                 <br />
                 <span class="text-gray-500 ml-4">
-                  작성자: {inquiry.userId} | 작성일: {inquiry.replyDate 
-                    ? parseDate(inquiry.replyDate)?.toLocaleDateString() || "작성일 없음"
+                  작성자: {inquiry.userId} | 작성일: {inquiry.replyDate
+                    ? parseDate(inquiry.replyDate)?.toLocaleDateString() ||
+                      "작성일 없음"
                     : "작성일 없음"}
-              </span>
+                </span>
                 <div class="mt-2 ml-4">
                   <button
                     on:click={() => {
