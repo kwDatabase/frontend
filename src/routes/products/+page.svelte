@@ -1,16 +1,51 @@
 <script>
   import { Input, Button, Select } from "flowbite-svelte";
-  import { goto } from "$app/navigation"; // goto를 import 합니다.
+  import { goto } from "$app/navigation";
+  import { isLoggedIn } from "$src/stores/auth"; // 로그인 상태 스토어 가져오기
+
+  //////////////////////////
+  ////// 로그인 관리 섹션 //////
+  //////////////////////////
+
+  let loggedIn = false; // 로그인 상태 변수
+  // 로그인 상태 구독
+  isLoggedIn.subscribe((value) => {
+    loggedIn = value;
+  });
+  // 상품 등록 버튼 클릭 시 호출
+  function handleRegisterProduct() {
+    if (loggedIn) {
+      goto("/products/create"); // 로그인 되어 있으면 상품 등록 페이지로 이동
+    } else {
+      alert("로그인이 필요한 기능입니다.");
+      goto("/login"); // 로그인 안되어 있으면 로그인 페이지로 이동
+    }
+  }
+
+  //////////////////////////
+  /////// 상품 관리 섹션 //////
+  //////////////////////////
 
   export let data;
-  console.log("data: ", data);
-
   let searchQuery = "";
   let sortOption = "default"; // 정렬 기준 초기화
 
   let products = data.products;
 
   let filteredProducts = [...products]; // 초기 필터링된 제품 리스트
+
+  // 날짜 변환 함수
+  function parseDate(dateString) {
+    const [datePart, timePart] = dateString.split(" "); // 날짜와 시간 분리
+    const year = datePart.substring(0, 4);
+    const month = datePart.substring(4, 6);
+    const day = datePart.substring(6, 8);
+    const hours = timePart.substring(0, 2);
+    const minutes = timePart.substring(2, 4);
+
+    // ISO 형식으로 변환
+    return new Date(`${year}-${month}-${day}T${hours}:${minutes}:00`);
+  }
 
   function filterProducts() {
     // 검색 쿼리로 필터링
@@ -35,7 +70,7 @@
           case "priceDesc":
             return b.price - a.price;
           case "recent":
-            return b.recentDate - a.recentDate;
+            return parseDate(b.date) - parseDate(a.date);
           case "rating":
             return b.rating - a.rating; // 판매자 평점으로 정렬
           default:
@@ -96,10 +131,8 @@
   </Select>
 
   <!-- 상품 등록 버튼 -->
-  <Button
-    on:click={() => goto("/products/create")}
-    color="blue"
-    class="mt-4 text-white">상품 등록</Button
+  <Button on:click={handleRegisterProduct} color="blue" class="mt-4 text-white"
+    >상품 등록</Button
   >
 
   <h2 class="text-xl font-semibold mt-4">검색 결과:</h2>

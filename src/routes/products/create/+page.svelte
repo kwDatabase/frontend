@@ -2,6 +2,14 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { Button, Input, Textarea, Select } from "flowbite-svelte";
+    import { userInfo } from "$src/stores/auth";
+
+    // 사용자 로그인 정보
+    let userId; // 로그인한 사용자의 ID를 저장할 변수
+    userInfo.subscribe((value) => {
+        userId = value?.id; // 사용자 ID를 가져옴 (없으면 undefined)
+    });
+
 
     let newProduct = {
         name: "",
@@ -45,6 +53,7 @@
                 formData.append("price", newProduct.price);
                 formData.append("category_id", newProduct.categoryId);
                 formData.append("sub_category_id", newProduct.subCategoryId);
+                formData.append("user_id", userId); // 사용자 ID 추가
 
                 const response = await fetch(
                     "http://localhost:3000/products/create",

@@ -1,6 +1,23 @@
 <script>
   import { Input, Button, Select, Textarea } from "flowbite-svelte";
-  import { goto } from "$app/navigation"; // goto를 import 합니다.
+  import { goto } from "$app/navigation";
+  import { userInfo } from "$src/stores/auth";
+
+  let loggedInUserId; // 로그인한 사용자 ID 저장
+  // 사용자 정보 구독
+  userInfo.subscribe((value) => {
+    loggedInUserId = value?.id; // 사용자 ID를 가져옴 (없으면 undefined)
+  });
+  // 상품 수정 버튼 클릭 시 호출
+  function handleEditProduct() {
+    if (loggedInUserId === updatedProduct.userName) {
+      // 작성자 ID와 로그인한 사용자 ID 비교
+      goto(`/products/edit/${updatedProduct.id}`); // 수정 페이지로 이동
+    } else {
+      console.log("Debug: ", loggedInUserId, "and", updatedProduct.userId);
+      alert("상품을 수정할 권한이 없습니다."); // 권한이 없을 경우 알림
+    }
+  }
 
   export let data; // 상품 정보 받기
   console.log("data : ", data);
@@ -71,6 +88,18 @@
 
   // 후기 추가 API
   async function addReview() {
+    // 로그인 여부 확인
+    if (!loggedInUserId) {
+      alert("후기를 작성하려면 로그인해야 합니다."); // 로그인하지 않은 경우 알림
+      return; // 함수 종료
+    }
+
+    // 상품 작성자 ID와 로그인한 사용자 ID 비교
+    if (loggedInUserId === updatedProduct.userName) {
+      alert("상품 작성자는 후기를 작성할 수 없습니다."); // 동일한 경우 알림
+      return; // 함수 종료
+    }
+
     if (newReview.trim() !== "" && newRating > 0) {
       try {
         const response = await fetch(
@@ -81,7 +110,7 @@
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              user_id: "qwer",
+              user_id: loggedInUserId,
               content: newReview,
               rating: newRating,
             }),
@@ -95,7 +124,7 @@
         const reviewData = await response.json();
         updatedProduct.reviews.push({
           id: reviewData.id,
-          userId: "qwer",
+          userId: loggedInUserId,
           content: newReview,
           date: new Date().toISOString(),
           rating: newRating,
@@ -125,6 +154,12 @@
     const review = updatedProduct.reviews.find((r) => r.id === reviewId);
     if (!review) {
       alert("해당 리뷰를 찾을 수 없습니다.");
+      return;
+    }
+
+    // 로그인한 사용자 ID와 후기 작성자 ID 비교
+    if (loggedInUserId !== review.userId) {
+      alert("이 후기의 수정 권한이 없습니다."); // 권한이 없을 경우 알림
       return;
     }
 
@@ -163,6 +198,18 @@
 
   // 후기 삭제 API
   async function deleteReview(reviewId) {
+    const review = updatedProduct.reviews.find((r) => r.id === reviewId);
+    if (!review) {
+      alert("해당 리뷰를 찾을 수 없습니다.");
+      return;
+    }
+
+    // 로그인한 사용자 ID와 후기 작성자 ID 비교
+    if (loggedInUserId !== review.userId) {
+      alert("이 후기를 삭제할 권한이 없습니다."); // 권한이 없을 경우 알림
+      return;
+    }
+
     if (confirm("정말로 이 후기를 삭제하시겠습니까?")) {
       try {
         const response = await fetch(
@@ -201,6 +248,18 @@
 
   // 문의 추가 API
   async function addInquiry() {
+    // 로그인 여부 확인
+    if (!loggedInUserId) {
+      alert("문의를 작성하려면 로그인해야 합니다."); // 로그인하지 않은 경우 알림
+      return; // 함수 종료
+    }
+
+    // 상품 작성자 ID와 로그인한 사용자 ID 비교
+    if (loggedInUserId === updatedProduct.userName) {
+      alert("상품 작성자는 문의를 작성할 수 없습니다."); // 동일한 경우 알림
+      return; // 함수 종료
+    }
+
     if (newInquiry.trim() !== "") {
       try {
         const response = await fetch(
@@ -211,7 +270,7 @@
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              asker: "Anonymous",
+              asker: loggedInUserId,
               content: newInquiry,
             }),
           },
@@ -224,7 +283,7 @@
         const inquiryData = await response.json();
         updatedProduct.inquiries.push({
           id: inquiryData.id, // 서버에서 반환된 ID 사용
-          asker: "Anonymous",
+          asker: loggedInUserId,
           content: newInquiry,
           date: new Date(),
           replies: [],
@@ -248,6 +307,12 @@
     const inquiry = updatedProduct.inquiries.find((i) => i.id === inquiryId);
     if (!inquiry) {
       alert("해당 문의를 찾을 수 없습니다.");
+      return;
+    }
+
+    // 로그인한 사용자 ID와 문의 작성자 ID 비교
+    if (loggedInUserId !== inquiry.userId) {
+      alert("이 문의의 수정 권한이 없습니다."); // 권한이 없을 경우 알림
       return;
     }
 
@@ -282,6 +347,18 @@
 
   // 문의 삭제 API
   async function deleteInquiry(inquiryId) {
+    const inquiry = updatedProduct.inquiries.find((i) => i.id === inquiryId);
+    if (!inquiry) {
+      alert("해당 문의를 찾을 수 없습니다.");
+      return;
+    }
+
+    // 로그인한 사용자 ID와 문의 작성자 ID 비교
+    if (loggedInUserId !== inquiry.userId) {
+      alert("이 문의의 수정 권한이 없습니다."); // 권한이 없을 경우 알림
+      return;
+    }
+
     if (confirm("정말로 이 문의를 삭제하시겠습니까?")) {
       try {
         const response = await fetch(
@@ -303,8 +380,14 @@
     }
   }
 
-  // 대댓글 추가 API
+  // 문의답변 추가 API
   async function addReply(inquiryId) {
+    if (loggedInUserId !== updatedProduct.userName) {
+      console.log("checking: ", loggedInUserId, "and", updatedProduct.userName);
+      alert("이 문의에 대한 답변 권한이 없습니다."); // 권한이 없을 경우 알림
+      return;
+    }
+
     if (newReply.trim() !== "") {
       try {
         const response = await fetch(
@@ -315,7 +398,7 @@
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              responder: "Anonymous",
+              responder: updatedProduct.userName,
               content: newReply,
             }),
           },
@@ -331,18 +414,24 @@
         inquiry.reply_content = newReply; // 대댓글 내용 업데이트
         newReply = ""; // 대댓글 입력 필드 초기화
 
-        // 대댓글 추가 성공 후
+        // 문의답변 추가 성공 후
         location.reload(); // 화면 새로고침
       } catch (error) {
         alert(error.message);
       }
     } else {
-      alert("대댓글 내용을 입력하세요.");
+      alert("답변 내용을 입력하세요.");
     }
   }
 
-  // 대댓글 수정 API
+  // 문의답변 수정 API
   async function updateReply(inquiryId) {
+    if (loggedInUserId !== updatedProduct.userName) {
+      console.log("checking: ", loggedInUserId, "and", updatedProduct.userName);
+      alert("이 문의 답변에 대한 수정 권한이 없습니다."); // 권한이 없을 경우 알림
+      return;
+    }
+
     if (editingReplyContent.trim() !== "") {
       try {
         const now = new Date();
@@ -365,7 +454,7 @@
         );
 
         if (!response.ok) {
-          throw new Error("대댓글 수정에 실패했습니다.");
+          throw new Error("문의답변 수정에 실패했습니다.");
         }
 
         // 대댓글 내용 업데이트
@@ -383,12 +472,18 @@
         alert(error.message);
       }
     } else {
-      alert("대댓글 내용을 입력하세요.");
+      alert("문의답변 내용을 입력하세요.");
     }
   }
 
-  // 대댓글 삭제 API
+  // 문의답변 삭제 API
   async function deleteReply(inquiryId) {
+    if (loggedInUserId !== updatedProduct.userName) {
+      console.log("checking: ", loggedInUserId, "and", updatedProduct.userName);
+      alert("이 문의답변에 대한 삭제 권한이 없습니다."); // 권한이 없을 경우 알림
+      return;
+    }
+
     if (confirm("정말로 대댓글을 삭제하시겠습니까?")) {
       try {
         const response = await fetch(
@@ -399,7 +494,7 @@
         );
 
         if (!response.ok) {
-          throw new Error("대댓글 삭제에 실패했습니다.");
+          throw new Error("문의답변 삭제에 실패했습니다.");
         }
 
         const inquiry = updatedProduct.inquiries.find(
@@ -498,7 +593,6 @@
           disabled
         />
       </div>
-      <!-- 상품 설명란 추가 -->
       <div class="mt-2">
         <label for="product-description" class="block text-sm font-medium"
           >상품 설명</label
@@ -512,10 +606,7 @@
         ></textarea>
       </div>
       <div class="mt-4">
-        <Button
-          on:click={() => goto(`/products/edit/${updatedProduct.id}`)}
-          color="blue">수정</Button
-        >
+        <Button on:click={handleEditProduct} color="blue">상품 수정</Button>
       </div>
     </form>
 
@@ -709,7 +800,7 @@
                   {inquiry.replyContent}
                   <br />
                   <span class="text-gray-500 ml-4">
-                    작성자: {inquiry.userId} | 작성일: {inquiry.replyDate
+                    작성자: {updatedProduct.userName} | 작성일: {inquiry.replyDate
                       ? parseDate(inquiry.replyDate)?.toLocaleDateString() ||
                         "작성일 없음"
                       : "작성일 없음"}
@@ -786,7 +877,7 @@
     align-items: center; /* 수평 중앙 정렬 */
     justify-content: center; /* 수직 중앙 정렬 */
   }
-  
+
   img {
     width: 70%; /* 이미지가 컨테이너에 맞춰 조정되도록 설정 */
     height: auto; /* 비율을 유지하며 높이 자동 조정 */

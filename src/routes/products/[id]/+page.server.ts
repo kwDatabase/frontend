@@ -20,8 +20,8 @@ export const load = async ({ params }) => {
             content: product.content,
             status: product.status,
             rating: product.user_rating || 0,
-            userName: product.user_id, // 사용자 이름
-            nicName: product.user_name,
+            userName: product.user_id, // 사용자 아이디
+            nicName: product.nicNmae, // 사용자 닉네임
             reviews: Array.isArray(product.reviews) ? product.reviews : [], // 유효성 검사
             inquiries: Array.isArray(product.inquiries) ? product.inquiries : [] // 유효성 검사
         }
