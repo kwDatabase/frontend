@@ -421,354 +421,391 @@
 </script>
 
 <main>
-  <h1 class="text-2xl font-bold">상품 조회</h1>
+  <div class="relative">
+    <!-- 오버레이 추가 '판매 완료' -->
+    {#if updatedProduct.status === 2}
+      <div class="overlay">
+        <p class="text-white text-lg font-semibold">판매 완료</p>
+      </div>
+    {/if}
 
-  <form on:submit class="mt-4">
-    <!-- 상품 정보 입력 필드 -->
-    <div>
-      <label for="product-name" class="block text-sm font-medium"
-        >상품 사진</label
-      >
-      <div class="mt-4 product-detail-img-container">
-        <img
-          src={`http://localhost:3000${updatedProduct.image}`}
-          alt={updatedProduct.name}
-          class="w-full h-48 object-cover rounded"
+    <!-- 오버레이 추가 '판매 중지' -->
+    {#if updatedProduct.status === 3}
+      <div class="overlay">
+        <p class="text-white text-lg font-semibold">판매 중지</p>
+      </div>
+    {/if}
+
+    <h1 class="text-2xl font-bold">상품 조회</h1>
+
+    <form on:submit class="mt-4">
+      <!-- 상품 정보 입력 필드 -->
+      <div>
+        <label for="product-name" class="block text-sm font-medium"
+          >상품 사진</label
+        >
+        <div class="mt-4 product-detail-img-container">
+          <img
+            src={`http://localhost:3000${updatedProduct.image}`}
+            alt={updatedProduct.name}
+            class="w-full h-48 object-cover rounded"
+          />
+        </div>
+        <label for="product-name" class="block text-sm font-medium"
+          >상품 이름</label
+        >
+        <input
+          id="product-name"
+          type="text"
+          bind:value={updatedProduct.name}
+          class="border rounded p-2 w-full"
+          disabled
         />
       </div>
-      <label for="product-name" class="block text-sm font-medium"
-        >상품 이름</label
-      >
-      <input
-        id="product-name"
-        type="text"
-        bind:value={updatedProduct.name}
-        class="border rounded p-2 w-full"
-        disabled
-      />
-    </div>
-    <div class="mt-2">
-      <label for="product-price" class="block text-sm font-medium">가격</label>
-      <input
-        id="product-price"
-        type="number"
-        bind:value={updatedProduct.price}
-        class="border rounded p-2 w-full"
-        disabled
-      />
-    </div>
-    <div class="mt-2">
-      <label for="product-seller" class="block text-sm font-medium"
-        >판매자</label
-      >
-      <input
-        id="product-seller"
-        type="text"
-        bind:value={updatedProduct.userName}
-        class="border rounded p-2 w-full"
-        disabled
-      />
-    </div>
-    <div class="mt-2">
-      <label for="product-rating" class="block text-sm font-medium"
-        >판매자 평점</label
-      >
-      <input
-        id="product-rating"
-        type="number"
-        bind:value={updatedProduct.rating}
-        step="0.1"
-        class="border rounded p-2 w-full"
-        disabled
-      />
-    </div>
-    <!-- 상품 설명란 추가 -->
-    <div class="mt-2">
-      <label for="product-description" class="block text-sm font-medium"
-        >상품 설명</label
-      >
-      <textarea
-        id="product-description"
-        bind:value={updatedProduct.content}
-        class="border rounded p-2 w-full"
-        rows="4"
-        disabled
-      ></textarea>
-    </div>
-    <div class="mt-4">
-      <Button
-        on:click={() => goto(`/products/edit/${updatedProduct.id}`)}
-        color="blue">수정</Button
-      >
-    </div>
-  </form>
-
-  <div class="mt-4 border"></div>
-
-  <!-- 내비게이션 바 -->
-  <div class="flex space-x-4 mt-4 mb-4">
-    <button
-      on:click={() => switchTab("reviews")}
-      class={`p-2 rounded ${activeTab === "reviews" ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}
-    >
-      후기
-    </button>
-    <button
-      on:click={() => switchTab("inquiries")}
-      class={`p-2 rounded ${activeTab === "inquiries" ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}
-    >
-      문의
-    </button>
-  </div>
-
-  <!-- 후기 섹션 -->
-  {#if activeTab === "reviews"}
-    <h2 class="text-xl font-semibold mt-4">후기 목록</h2>
-    <ul>
-      {#each updatedProduct.reviews as review (review.id)}
-        <li class="border-b py-2">
-          <strong> ID: {review.userId} </strong>
-          {#if editingReviewId === review.id}
-            <div>
-              <input
-                type="text"
-                bind:value={editingReviewContent}
-                class="border rounded p-2 w-full"
-              />
-              <div class="flex mt-2">
-                {#each [1, 2, 3, 4, 5] as star}
-                  <span
-                    class="cursor-pointer text-2xl"
-                    class:selected={editingRating >= star}
-                    on:click={() => (editingRating = star)}
-                  >
-                    ★
-                  </span>
-                {/each}
-              </div>
-              <button
-                on:click={() => updateReview(review.id)}
-                class="bg-green-500 text-white p-2 rounded mt-2"
-              >
-                수정하기
-              </button>
-              <button
-                on:click={cancelEdit}
-                class="bg-gray-300 text-black p-2 rounded mt-2"
-              >
-                수정 취소
-              </button>
-            </div>
-          {:else}
-            <div>
-              {review.content}
-              <br />
-              <span class="text-gray-500"
-                >{parseDate(review.date).toLocaleDateString()}</span
-              >
-              - {review.rating} ⭐
-              <div class="flex space-x-2 mt-2">
-                <button
-                  on:click={() => {
-                    editingReviewContent = review.content; // 수정할 내용을 설정
-                    editingRating = review.rating; // 수정할 평점을 설정
-                    editingReviewId = review.id; // 수정 중인 후기 ID 설정
-                  }}
-                  class="text-blue-500">수정</button
-                >
-                <button
-                  on:click={() => deleteReview(review.id)}
-                  class="text-red-500">삭제</button
-                >
-              </div>
-            </div>
-          {/if}
-        </li>
-      {/each}
-    </ul>
-
-    <h2 class="text-xl font-semibold mt-4">후기 작성</h2>
-    <input
-      type="text"
-      bind:value={newReview}
-      placeholder="후기를 입력하세요..."
-      class="border rounded p-2 w-full"
-    />
-
-    <div class="flex mt-2">
-      {#each [1, 2, 3, 4, 5] as star}
-        <span
-          class="cursor-pointer text-2xl"
-          class:selected={newRating >= star}
-          on:click={() => (newRating = star)}
+      <div class="mt-2">
+        <label for="product-price" class="block text-sm font-medium">가격</label
         >
-          ★
-        </span>
-      {/each}
+        <input
+          id="product-price"
+          type="number"
+          bind:value={updatedProduct.price}
+          class="border rounded p-2 w-full"
+          disabled
+        />
+      </div>
+      <div class="mt-2">
+        <label for="product-seller" class="block text-sm font-medium"
+          >판매자</label
+        >
+        <input
+          id="product-seller"
+          type="text"
+          bind:value={updatedProduct.nicName}
+          class="border rounded p-2 w-full"
+          disabled
+        />
+      </div>
+      <div class="mt-2">
+        <label for="product-rating" class="block text-sm font-medium"
+          >판매자 평점</label
+        >
+        <input
+          id="product-rating"
+          type="number"
+          bind:value={updatedProduct.rating}
+          step="0.1"
+          class="border rounded p-2 w-full"
+          disabled
+        />
+      </div>
+      <!-- 상품 설명란 추가 -->
+      <div class="mt-2">
+        <label for="product-description" class="block text-sm font-medium"
+          >상품 설명</label
+        >
+        <textarea
+          id="product-description"
+          bind:value={updatedProduct.content}
+          class="border rounded p-2 w-full"
+          rows="4"
+          disabled
+        ></textarea>
+      </div>
+      <div class="mt-4">
+        <Button
+          on:click={() => goto(`/products/edit/${updatedProduct.id}`)}
+          color="blue">수정</Button
+        >
+      </div>
+    </form>
+
+    <div class="mt-4 border"></div>
+
+    <!-- 내비게이션 바 -->
+    <div class="flex space-x-4 mt-4 mb-4">
+      <button
+        on:click={() => switchTab("reviews")}
+        class={`p-2 rounded ${activeTab === "reviews" ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}
+      >
+        후기
+      </button>
+      <button
+        on:click={() => switchTab("inquiries")}
+        class={`p-2 rounded ${activeTab === "inquiries" ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}
+      >
+        문의
+      </button>
     </div>
 
-    <button
-      on:click={addReview}
-      class="bg-green-500 text-white p-2 rounded mt-2"
-    >
-      후기 작성
-    </button>
-  {/if}
-
-  <!-- 문의 섹션 -->
-  {#if activeTab === "inquiries"}
-    <h2 class="text-xl font-semibold mt-4">문의 목록</h2>
-    <ul>
-      {#each updatedProduct.inquiries as inquiry, index}
-        <li class="border-b py-2">
-          <strong>{inquiry.asker} ID: {inquiry.userId}</strong>
-
-          {#if editingInquiryId === inquiry.id}
-            <div>
-              <input
-                type="text"
-                bind:value={editingInquiryContent}
-                class="border rounded p-2 w-full"
-              />
-              <button
-                on:click={() => updateInquiry(inquiry.id)}
-                class="bg-green-500 text-white p-2 rounded mt-2"
-              >
-                수정하기
-              </button>
-              <button
-                on:click={cancelEditInquiry}
-                class="bg-gray-300 text-black p-2 rounded mt-2"
-              >
-                수정 취소
-              </button>
-            </div>
-          {:else}
-            <div>
-              {inquiry.content}
-              <br />
-              <span class="text-gray-500"
-                >{parseDate(inquiry.date).toLocaleDateString()}</span
-              >
-              <div class="flex space-x-2 mt-2">
-                <button
-                  on:click={() => startEditInquiry(inquiry)}
-                  class="text-blue-500">수정</button
-                >
-                <button
-                  on:click={() => deleteInquiry(inquiry.id)}
-                  class="text-red-500">삭제</button
-                >
-              </div>
-            </div>
-          {/if}
-
-          <!-- 문의 답변 부분 -->
-          {#if inquiry.replyContent}
-            <div class="mt-2 pl-4 border-l-4 border-blue-500">
-              {#if editingReplyId === inquiry.id}
-                <!-- 수정 모드 체크 -->
-                <strong>→ 문의 답변: </strong>
+    <!-- 후기 섹션 -->
+    {#if activeTab === "reviews"}
+      <h2 class="text-xl font-semibold mt-4">후기 목록</h2>
+      <ul>
+        {#each updatedProduct.reviews as review (review.id)}
+          <li class="border-b py-2">
+            <strong> ID: {review.userId} </strong>
+            {#if editingReviewId === review.id}
+              <div>
                 <input
                   type="text"
-                  bind:value={editingReplyContent}
+                  bind:value={editingReviewContent}
                   class="border rounded p-2 w-full"
                 />
-                <div class="mt-2">
-                  <button
-                    on:click={() => updateReply(inquiry.id)}
-                    class="bg-green-500 text-white p-2 rounded mt-2"
-                  >
-                    수정 완료
-                  </button>
-                  <button
-                    on:click={() => cancelEditReply()}
-                    class="bg-gray-300 text-black p-2 rounded mt-2"
-                  >
-                    수정 취소
-                  </button>
+                <div class="flex mt-2">
+                  {#each [1, 2, 3, 4, 5] as star}
+                    <span
+                      class="cursor-pointer text-2xl"
+                      class:selected={editingRating >= star}
+                      on:click={() => (editingRating = star)}
+                    >
+                      ★
+                    </span>
+                  {/each}
                 </div>
-              {:else}
-                <strong>→ 문의 답변: </strong>
-                {inquiry.replyContent}
+                <button
+                  on:click={() => updateReview(review.id)}
+                  class="bg-green-500 text-white p-2 rounded mt-2"
+                >
+                  수정하기
+                </button>
+                <button
+                  on:click={cancelEdit}
+                  class="bg-gray-300 text-black p-2 rounded mt-2"
+                >
+                  수정 취소
+                </button>
+              </div>
+            {:else}
+              <div>
+                {review.content}
                 <br />
-                <span class="text-gray-500 ml-4">
-                  작성자: {inquiry.userId} | 작성일: {inquiry.replyDate
-                    ? parseDate(inquiry.replyDate)?.toLocaleDateString() ||
-                      "작성일 없음"
-                    : "작성일 없음"}
-                </span>
-                <div class="mt-2 ml-4">
+                <span class="text-gray-500"
+                  >{parseDate(review.date).toLocaleDateString()}</span
+                >
+                - {review.rating} ⭐
+                <div class="flex space-x-2 mt-2">
                   <button
                     on:click={() => {
-                      startEditReply(inquiry); // 수정 모드로 전환
+                      editingReviewContent = review.content; // 수정할 내용을 설정
+                      editingRating = review.rating; // 수정할 평점을 설정
+                      editingReviewId = review.id; // 수정 중인 후기 ID 설정
                     }}
-                    class="text-blue-500 ml-2">수정</button
+                    class="text-blue-500">수정</button
                   >
                   <button
-                    on:click={() => deleteReply(inquiry.id)}
-                    class="text-red-500 ml-2">삭제</button
+                    on:click={() => deleteReview(review.id)}
+                    class="text-red-500">삭제</button
                   >
                 </div>
-              {/if}
-            </div>
-          {:else}
-            <div class="mt-2">
-              <button
-                on:click={() => (currentInquiryIndex = inquiry.id)}
-                class="text-blue-500 ml-2">답변하기</button
-              >
-              {#if currentInquiryIndex === inquiry.id}
-                <div class="mt-2">
+              </div>
+            {/if}
+          </li>
+        {/each}
+      </ul>
+
+      <h2 class="text-xl font-semibold mt-4">후기 작성</h2>
+      <input
+        type="text"
+        bind:value={newReview}
+        placeholder="후기를 입력하세요..."
+        class="border rounded p-2 w-full"
+      />
+
+      <div class="flex mt-2">
+        {#each [1, 2, 3, 4, 5] as star}
+          <span
+            class="cursor-pointer text-2xl"
+            class:selected={newRating >= star}
+            on:click={() => (newRating = star)}
+          >
+            ★
+          </span>
+        {/each}
+      </div>
+
+      <button
+        on:click={addReview}
+        class="bg-green-500 text-white p-2 rounded mt-2"
+      >
+        후기 작성
+      </button>
+    {/if}
+
+    <!-- 문의 섹션 -->
+    {#if activeTab === "inquiries"}
+      <h2 class="text-xl font-semibold mt-4">문의 목록</h2>
+      <ul>
+        {#each updatedProduct.inquiries as inquiry, index}
+          <li class="border-b py-2">
+            <strong>{inquiry.asker} ID: {inquiry.userId}</strong>
+
+            {#if editingInquiryId === inquiry.id}
+              <div>
+                <input
+                  type="text"
+                  bind:value={editingInquiryContent}
+                  class="border rounded p-2 w-full"
+                />
+                <button
+                  on:click={() => updateInquiry(inquiry.id)}
+                  class="bg-green-500 text-white p-2 rounded mt-2"
+                >
+                  수정하기
+                </button>
+                <button
+                  on:click={cancelEditInquiry}
+                  class="bg-gray-300 text-black p-2 rounded mt-2"
+                >
+                  수정 취소
+                </button>
+              </div>
+            {:else}
+              <div>
+                {inquiry.content}
+                <br />
+                <span class="text-gray-500"
+                  >{parseDate(inquiry.date).toLocaleDateString()}</span
+                >
+                <div class="flex space-x-2 mt-2">
+                  <button
+                    on:click={() => startEditInquiry(inquiry)}
+                    class="text-blue-500">수정</button
+                  >
+                  <button
+                    on:click={() => deleteInquiry(inquiry.id)}
+                    class="text-red-500">삭제</button
+                  >
+                </div>
+              </div>
+            {/if}
+
+            <!-- 문의 답변 부분 -->
+            {#if inquiry.replyContent}
+              <div class="mt-2 pl-4 border-l-4 border-blue-500">
+                {#if editingReplyId === inquiry.id}
+                  <!-- 수정 모드 체크 -->
+                  <strong>→ 문의 답변: </strong>
                   <input
                     type="text"
-                    bind:value={newReply}
-                    placeholder="답변을 입력하세요..."
+                    bind:value={editingReplyContent}
                     class="border rounded p-2 w-full"
                   />
-                  <button
-                    on:click={() => addReply(inquiry.id)}
-                    class="bg-green-500 text-white p-2 rounded mt-2"
-                  >
-                    문의 답변 추가
-                  </button>
-                </div>
-              {/if}
-            </div>
-          {/if}
-        </li>
-      {/each}
-    </ul>
+                  <div class="mt-2">
+                    <button
+                      on:click={() => updateReply(inquiry.id)}
+                      class="bg-green-500 text-white p-2 rounded mt-2"
+                    >
+                      수정 완료
+                    </button>
+                    <button
+                      on:click={() => cancelEditReply()}
+                      class="bg-gray-300 text-black p-2 rounded mt-2"
+                    >
+                      수정 취소
+                    </button>
+                  </div>
+                {:else}
+                  <strong>→ 문의 답변: </strong>
+                  {inquiry.replyContent}
+                  <br />
+                  <span class="text-gray-500 ml-4">
+                    작성자: {inquiry.userId} | 작성일: {inquiry.replyDate
+                      ? parseDate(inquiry.replyDate)?.toLocaleDateString() ||
+                        "작성일 없음"
+                      : "작성일 없음"}
+                  </span>
+                  <div class="mt-2 ml-4">
+                    <button
+                      on:click={() => {
+                        startEditReply(inquiry); // 수정 모드로 전환
+                      }}
+                      class="text-blue-500 ml-2">수정</button
+                    >
+                    <button
+                      on:click={() => deleteReply(inquiry.id)}
+                      class="text-red-500 ml-2">삭제</button
+                    >
+                  </div>
+                {/if}
+              </div>
+            {:else}
+              <div class="mt-2">
+                <button
+                  on:click={() => (currentInquiryIndex = inquiry.id)}
+                  class="text-blue-500 ml-2">답변하기</button
+                >
+                {#if currentInquiryIndex === inquiry.id}
+                  <div class="mt-2">
+                    <input
+                      type="text"
+                      bind:value={newReply}
+                      placeholder="답변을 입력하세요..."
+                      class="border rounded p-2 w-full"
+                    />
+                    <button
+                      on:click={() => addReply(inquiry.id)}
+                      class="bg-green-500 text-white p-2 rounded mt-2"
+                    >
+                      문의 답변 추가
+                    </button>
+                  </div>
+                {/if}
+              </div>
+            {/if}
+          </li>
+        {/each}
+      </ul>
 
-    <h2 class="text-xl font-semibold mt-4">문의 작성</h2>
-    <input
-      type="text"
-      bind:value={newInquiry}
-      placeholder="문의 내용을 입력하세요..."
-      class="border rounded p-2 w-full"
-    />
-    <button
-      on:click={addInquiry}
-      class="bg-green-500 text-white p-2 rounded mt-2">문의 추가</button
-    >
-  {/if}
+      <h2 class="text-xl font-semibold mt-4">문의 작성</h2>
+      <input
+        type="text"
+        bind:value={newInquiry}
+        placeholder="문의 내용을 입력하세요..."
+        class="border rounded p-2 w-full"
+      />
+      <button
+        on:click={addInquiry}
+        class="bg-green-500 text-white p-2 rounded mt-2">문의 추가</button
+      >
+    {/if}
+  </div>
 </main>
 
 <style>
   main {
     padding: 1rem;
   }
+
   .selected {
     color: gold; /* 선택된 별의 색상 */
   }
+
   .product-detail-img-container {
     display: flex;
     flex-direction: column;
     align-items: center; /* 수평 중앙 정렬 */
     justify-content: center; /* 수직 중앙 정렬 */
   }
+  
   img {
     width: 70%; /* 이미지가 컨테이너에 맞춰 조정되도록 설정 */
     height: auto; /* 비율을 유지하며 높이 자동 조정 */
+  }
+
+  .overlay {
+    position: absolute; /* 절대 위치 지정 */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 검정색 투명도 0.5 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white; /* 텍스트 색상 */
+    font-size: 1.5rem; /* 텍스트 크기 */
+    opacity: 1; /* 기본적으로 보임 */
   }
 </style>
