@@ -49,14 +49,42 @@
     }
   }
 
+  // 상품 판매 중단 API
+  async function handleStopSale(productId) {
+    const confirmation = confirm("정말로 상품 판매를 중지하시겠습니까?");
+    if (confirmation) {
+      try {
+        console.log("start api");
+        const response = await fetch(
+          `http://localhost:3000/products/stop-sale/${productId}`,
+          {
+            method: "PATCH",
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("상품 판매 중지에 실패했습니다.");
+        }
+
+        alert("상품 판매가 중지되었습니다."); // 성공 알림
+        window.location.href = "/products"; // 리다이렉트
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+  }
+
   // 상품 삭제 API
   async function deleteProduct() {
     try {
-      const response = await fetch(`http://localhost:3000/products/edit/${updatedProduct.id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:3000/products/edit/${updatedProduct.id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
-      console.log("프론트 delete id : ",updatedProduct.id);
+      console.log("프론트 delete id : ", updatedProduct.id);
 
       if (response.ok) {
         alert("상품이 삭제되었습니다.");
@@ -137,16 +165,26 @@
       ></textarea>
     </div>
 
-    <div class="mt-4">
-      <button type="submit" class="mt-4 bg-blue-500 text-white p-2 rounded">
-        수정 완료
+    <div class="mt-4 flex">
+      <button
+        type="submit"
+        class="mt-4 mr-4 bg-yellow-500 text-white p-2 rounded"
+      >
+        상품 수정 완료
+      </button>
+      <button
+        type="button"
+        class="mt-4 mr-4 bg-yellow-500 text-white p-2 rounded"
+        on:click={() => handleStopSale(updatedProduct.id)}
+      >
+        상품 판매 중지
       </button>
       <button
         type="button"
         on:click={deleteProduct}
-        class="bg-red-500 text-white p-2 rounded"
+        class="mt-4 bg-red-500 text-white p-2 rounded ml-auto"
       >
-        삭제
+        상품 삭제
       </button>
     </div>
   </form>

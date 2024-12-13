@@ -52,4 +52,3 @@
 <div class="flex-1 overflow-auto">
   <slot></slot>
 </div>
-</div>

@@ -1,21 +1,56 @@
 <script>
   import { Input, Button, Select } from "flowbite-svelte";
-  import { goto } from "$app/navigation"; // goto를 import 합니다.
+  import { goto } from "$app/navigation";
+  import { isLoggedIn } from "$src/stores/auth"; // 로그인 상태 스토어 가져오기
+
+  //////////////////////////
+  ////// 로그인 관리 섹션 //////
+  //////////////////////////
+
+  let loggedIn = false; // 로그인 상태 변수
+  // 로그인 상태 구독
+  isLoggedIn.subscribe((value) => {
+    loggedIn = value;
+  });
+  // 상품 등록 버튼 클릭 시 호출
+  function handleRegisterProduct() {
+    if (loggedIn) {
+      goto("/products/create"); // 로그인 되어 있으면 상품 등록 페이지로 이동
+    } else {
+      alert("로그인이 필요한 기능입니다.");
+      goto("/login"); // 로그인 안되어 있으면 로그인 페이지로 이동
+    }
+  }
+
+  //////////////////////////
+  /////// 상품 관리 섹션 //////
+  //////////////////////////
 
   export let data;
-  console.log("data: ", data);
-
   let searchQuery = "";
   let sortOption = "default"; // 정렬 기준 초기화
-  
+
   let products = data.products;
-  
+
   let filteredProducts = [...products]; // 초기 필터링된 제품 리스트
+
+  // 날짜 변환 함수
+  function parseDate(dateString) {
+    const [datePart, timePart] = dateString.split(" "); // 날짜와 시간 분리
+    const year = datePart.substring(0, 4);
+    const month = datePart.substring(4, 6);
+    const day = datePart.substring(6, 8);
+    const hours = timePart.substring(0, 2);
+    const minutes = timePart.substring(2, 4);
+
+    // ISO 형식으로 변환
+    return new Date(`${year}-${month}-${day}T${hours}:${minutes}:00`);
+  }
 
   function filterProducts() {
     // 검색 쿼리로 필터링
     filteredProducts = products.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
     sortProducts(); // 필터링 후 정렬
   }
@@ -34,16 +69,10 @@
             return a.price - b.price;
           case "priceDesc":
             return b.price - a.price;
-          case "popularity":
-            return b.popularity - a.popularity;
           case "recent":
-            return b.recentDate - a.recentDate;
+            return parseDate(b.date) - parseDate(a.date);
           case "rating":
             return b.rating - a.rating; // 판매자 평점으로 정렬
-          case "discount":
-            return b.discount - a.discount;
-          case "stock":
-            return b.stock - a.stock;
           default:
             return 0;
         }
@@ -57,18 +86,21 @@
     sortProducts(); // 정렬 기준에 따라 상품 정렬
   }
 
-    // 상품 조회수 증가 요청
-    async function incrementViewCount(productId) {
+  // 상품 조회수 증가 요청
+  async function incrementViewCount(productId) {
     try {
-      const response = await fetch(`http://localhost:3000/products/${productId}/views`, {
-        method: 'PUT',
-      });
+      const response = await fetch(
+        `http://localhost:3000/products/${productId}/views`,
+        {
+          method: "PUT",
+        },
+      );
 
       if (!response.ok) {
-        throw new Error('조회수 업데이트에 실패했습니다.');
+        throw new Error("조회수 업데이트에 실패했습니다.");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   }
 
@@ -77,7 +109,6 @@
     incrementViewCount(product.id); // 조회수 증가 요청
     goto(`/products/${product.id}`); // 상품 상세 페이지로 이동
   }
-
 </script>
 
 <main>
@@ -95,32 +126,48 @@
     <option value="default">정렬 기준 선택</option>
     <option value="priceAsc">가격 낮은 순</option>
     <option value="priceDesc">가격 높은 순</option>
-    <option value="popularity">인기 순</option>
     <option value="recent">신상품 순</option>
     <option value="rating">평점 순</option>
-    <option value="discount">할인율 순</option>
-    <option value="stock">재고량 순</option>
   </Select>
 
   <!-- 상품 등록 버튼 -->
-  <Button on:click={() => goto("/products/create")} color="blue" class="mt-4 text-white">상품 등록</Button>
+  <Button on:click={handleRegisterProduct} color="blue" class="mt-4 text-white"
+    >상품 등록</Button
+  >
 
   <h2 class="text-xl font-semibold mt-4">검색 결과:</h2>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
     {#each filteredProducts as product}
-      <div class="border rounded-lg overflow-hidden shadow-lg">
+      <div class="border rounded-lg overflow-hidden shadow-lg relative">
         <img
-          src={`http://localhost:3000${product.image}`} 
+          src={`http://localhost:3000${product.image}`}
           alt={product.name}
           class="w-full h-48 object-cover"
         />
+
+        <!-- 오버레이 추가 '판매 완료' -->
+        {#if product.status === 2}
+          <div class="overlay">
+            <p class="text-white text-lg font-semibold">판매 완료</p>
+          </div>
+        {/if}
+
+        <!-- 오버레이 추가 '판매 중지' -->
+        {#if product.status === 3}
+          <div class="overlay">
+            <p class="text-white text-lg font-semibold">판매 중지</p>
+          </div>
+        {/if}
+
         <div class="p-4">
           <h3 class="text-lg font-semibold">{product.name}</h3>
           <p class="text-gray-500">{product.price}원</p>
-          <p class="text-gray-500">판매자: {product.seller}</p>
+          <p class="text-gray-500">판매자: {product.nicName}</p>
           <p class="text-gray-500">판매자 평점: {product.rating} ⭐</p>
           <div class="flex justify-end items-center">
-            <Button on:click={() => handleViewProduct(product)} color="green">조회</Button> 
+            <Button on:click={() => handleViewProduct(product)} color="green"
+              >조회</Button
+            >
           </div>
         </div>
       </div>
@@ -136,5 +183,33 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
+  }
+
+  .overlay {
+    position: absolute; /* 절대 위치 지정 */
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 100%; /* 부모 요소의 높이를 100%로 설정 */
+
+    background-color: rgba(0, 0, 0, 0.5); /* 검정색 투명도 0.5 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white; /* 텍스트 색상 */
+    font-size: 1.5rem; /* 텍스트 크기 */
+    opacity: 1; /* 기본적으로 보임 */
+
+    pointer-events: none; /* 오버레이가 클릭 이벤트를 차단하지 않도록 설정 */
+  }
+
+  /* 부모 요소에 relative 속성 추가 */
+  .relative {
+    position: relative; /* 부모 요소의 위치를 상대적으로 설정 */
+  }
+
+  .overlay p {
+    pointer-events: auto; /* 텍스트 클릭 가능 */
   }
 </style>
