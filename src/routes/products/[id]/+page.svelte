@@ -912,7 +912,6 @@
     align-items: center; /* 수평 중앙 정렬 */
     justify-content: center; /* 수직 중앙 정렬 */
   }
-
   img {
     width: 70%; /* 이미지가 컨테이너에 맞춰 조정되도록 설정 */
     height: auto; /* 비율을 유지하며 높이 자동 조정 */
