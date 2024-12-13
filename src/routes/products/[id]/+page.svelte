@@ -512,7 +512,35 @@
     activeTab = tab; // 활성화된 탭 전환
   }
 
-  console.log(updatedProduct.inquiries);
+  // 상품 구매 API
+  async function handlePurchase(productId) {
+    // 로그인 여부 확인
+    if (!loggedInUserId) {
+      alert("상품을 구매하려면 로그인해야 합니다."); // 로그인하지 않은 경우 알림
+      return; // 함수 종료
+    }
+
+    const confirmation = confirm("정말 구매하시겠습니까?");
+    if (confirmation) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/products/purchase/${productId}`,
+          {
+            method: "POST",
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("상품 구매에 실패했습니다.");
+        }
+
+        alert("구매 완료했습니다."); // 구매 완료 알림
+        window.location.href = '/products'; // 리다이렉트
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+  }
 </script>
 
 <main>
@@ -605,8 +633,15 @@
           disabled
         ></textarea>
       </div>
-      <div class="mt-4">
-        <Button on:click={handleEditProduct} color="blue">상품 수정</Button>
+      <div class="flex mt-4">
+        <Button
+          class="mr-4"
+          on:click={() => handlePurchase(updatedProduct.id)}
+          color="blue">상품 구매</Button
+        >
+        <Button class="ml-auto" on:click={handleEditProduct} color="yellow"
+          >상품 수정</Button
+        >
       </div>
     </form>
 
