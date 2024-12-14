@@ -9,7 +9,6 @@
     { label: '사용자 관리', href: '/admin/user' },
     { label: '카테고리 관리', href: '/admin/category' },
     { label: '권한 관리', href: '/admin/auth' },
-    { label: '대시보드', href: '/admin/dashboard' },
   ];
   
   $: activeUrl = $page.url.pathname;

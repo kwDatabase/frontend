@@ -51,6 +51,7 @@
     {#if loggedIn && user.id == "admin"}
     <NavLi href="/admin">Admin</NavLi>
     {/if}
+    <NavLi href="/dashboard">Dashboard</NavLi>
   </NavUl>
 </Navbar>
 <div class="flex-1 overflow-auto">

@@ -12,17 +12,17 @@
     let categoryChartCanvas;
     let priceChartCanvas;
 
-    const apiBaseUrl = "http://localhost:3000/admin";
+    const apiBaseUrl = "http://localhost:3000/dashboard";
 
     async function fetchDashboardData() {
         try {
             const [salesRes, productsRes, popularRes, priceRes, activitiesRes] = 
                 await Promise.all([
-                    fetch(`${apiBaseUrl}/dashboard/category-sales`),
-                    fetch(`${apiBaseUrl}/dashboard/subcategory-products`),
-                    fetch(`${apiBaseUrl}/dashboard/popular-products`),
-                    fetch(`${apiBaseUrl}/dashboard/price-distribution`),
-                    fetch(`${apiBaseUrl}/dashboard/recent-activities`)
+                    fetch(`${apiBaseUrl}/category-sales`),
+                    fetch(`${apiBaseUrl}/subcategory-products`),
+                    fetch(`${apiBaseUrl}/popular-products`),
+                    fetch(`${apiBaseUrl}/price-distribution`),
+                    fetch(`${apiBaseUrl}/recent-activities`)
                 ]);
 
             categorySales = await salesRes.json();
