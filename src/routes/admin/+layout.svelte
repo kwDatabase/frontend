@@ -6,7 +6,7 @@
   import { isLoggedIn, userInfo } from '$src/stores/auth';
   
   const routes = [
-    { label: '사용자 관리', href: '/admin/user' },
+    { label: '사용자 관리', href: '/admin' },
     { label: '카테고리 관리', href: '/admin/category' },
     { label: '권한 관리', href: '/admin/auth' },
   ];
@@ -27,9 +27,6 @@
       console.log(value)
       if (!value || value.id !== 'admin') {
         goto('/');
-      }
-      else if (activeUrl === '/admin') {
-        goto('/admin/user');
       }
     });
 
