@@ -147,6 +147,7 @@
 		</div>
 		<Button 
 			size="sm"
+			outline
 			color="light"
 			on:click={toggleSort}
 		>
@@ -179,6 +180,7 @@
 						<div class="flex gap-2">
 							<Button 
 								size="sm"
+								color="light"
 								on:click={() => {
 									selectedUser = user;
 									showAuthModal = true;
@@ -188,6 +190,7 @@
 							</Button>
 							<Button 
 								size="sm"
+								outline
 								color="blue"
 								on:click={() => {
 									editingUser = {...user};
@@ -198,6 +201,7 @@
 							</Button>
 							<Button 
 								size="sm"
+								outline
 								color="red"
 								on:click={() => deleteUser(user.Id)}
 							>
@@ -228,10 +232,10 @@
 				</Select>
 			</div>
 			<div class="flex justify-end gap-2">
-				<Button color="alternative" on:click={() => showAuthModal = false}>
+				<Button outline color="alternative" on:click={() => showAuthModal = false}>
 					취소
 				</Button>
-				<Button on:click={updateUserAuthGroup}>
+				<Button outline on:click={updateUserAuthGroup}>
 					저장
 				</Button>
 			</div>
@@ -260,10 +264,10 @@
 				</div>
 			</div>
 			<div class="flex justify-end gap-2">
-				<Button color="alternative" on:click={() => showEditModal = false}>
+				<Button outline color="alternative" on:click={() => showEditModal = false}>
 					취소
 				</Button>
-				<Button on:click={updateUser}>
+				<Button outline on:click={updateUser}>
 					저장
 				</Button>
 			</div>

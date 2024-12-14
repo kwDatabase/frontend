@@ -204,12 +204,14 @@
                     editGroupName = group.Name;
                     editingGroupAuths = group.Auths.map(auth => auth.Id);
                   }}
+                  outline
                   color="blue"
                 >
                   수정
                 </Button>
                 <Button
                   on:click={() => deleteAuthGroup(group.Id)}
+                  outline
                   color="red"
                 >
                   삭제

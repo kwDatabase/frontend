@@ -202,6 +202,7 @@
                 <h3 class="text-lg font-medium text-gray-800 dark:text-white">{category.name}</h3>
                 <div class="flex items-center gap-2 mb-2">
                   <Button 
+                    color="light"
                     on:click={() => category.isSubCategoryVisible = !category.isSubCategoryVisible}
                   >
                     {#if category.isSubCategoryVisible}
@@ -216,6 +217,7 @@
                         editCategoryName = category.name
                       }}
                     color="blue"
+                    outline
                   >
                     수정
                   </Button>
@@ -225,6 +227,7 @@
                         deleteCategory(category.Id)
                       }
                     }}
+                    outline
                     color="red"
                   >
                     삭제
@@ -268,6 +271,7 @@
                               editSubCategoryName = sub_category.name;
                             }}
                             color="blue"
+                            outline
                           >
                             수정
                           </Button>
@@ -278,6 +282,7 @@
                               }
                             }}
                             color="red"
+                            outline
                           >
                             삭제
                           </Button>
