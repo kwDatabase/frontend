@@ -669,7 +669,7 @@
         <div class="flex mt-4">
           <Button
             class="mr-4"
-            on:click={() => handlePurchase(updatedProduct.id)}
+            on:click={() => handlePurchase(updatedProduct)}
             color="blue">상품 구매</Button
           >
           <Button class="ml-auto" on:click={handleEditProduct} color="yellow"
