@@ -116,8 +116,10 @@
 
 	$: sortedUsers = [...filteredUsers].sort((a, b) => {
 		if (sortBy === 'products') {
-			return b.Product_Count - a.Product_Count;
+			return (b.Product_Count || 0) - (a.Product_Count || 0);
 		}
+		if (!a.Enter_Date) return 1;
+		if (!b.Enter_Date) return -1;
 		return b.Enter_Date.localeCompare(a.Enter_Date);
 	});
 

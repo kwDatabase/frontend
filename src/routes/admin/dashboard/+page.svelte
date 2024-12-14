@@ -110,12 +110,12 @@
             <canvas bind:this={priceChartCanvas}></canvas>
         </Card>
 
-        <Card class="w-full" size="lg"  >
-            <h3 class="text-lg font-bold mb-2">인기 상품 TOP 10</h3>
+        <Card class="w-full" size="lg">
+            <h3 class="text-lg font-bold mb-2 dark:text-white">인기 상품 TOP 10</h3>
             <div class="overflow-x-auto">
                 <div class="max-h-[400px] overflow-y-auto">
-                    <table class="w-full text-sm text-left text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0">
                             <tr>
                                 <th class="px-4 py-2">순위</th>
                                 <th class="px-4 py-2">상품명</th>
@@ -127,7 +127,7 @@
                         </thead>
                         <tbody>
                             {#each popularProducts as product, i}
-                                <tr class="bg-white border-b">
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                     <td class="px-4 py-2">{i + 1}</td>
                                     <td class="px-4 py-2">{product.title}</td>
                                     <td class="px-4 py-2">{product.category_name}</td>

@@ -34,15 +34,19 @@
   </NavBrand>
   <div class="flex md:order-2">
     <DarkMode {btnClass} />
+    <NavUl>
+      {#if loggedIn}
+      <NavLi on:click={logout}>Logout</NavLi>
+      {:else}
+      <NavLi on:click={goToLogin}>Login</NavLi>
+      {/if}
+    </NavUl>
   </div>
+  
   <NavUl>
-    <NavLi href="/" active={true}>Home</NavLi>
     <NavLi href="/products">Products</NavLi>
     {#if loggedIn}
     <NavLi href="/mypage">MyPage</NavLi>
-    <NavLi on:click={logout}>Logout</NavLi>
-    {:else}
-    <NavLi on:click={goToLogin}>Login</NavLi>
     {/if}
     {#if loggedIn && user.id == "admin"}
     <NavLi href="/admin">Admin</NavLi>
