@@ -154,98 +154,115 @@
   onMount(fetchCategories);
 </script>
 
-<main>
-  <h1 class="text-2xl font-bold">상품 조회</h1>
+<main class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">상품 조회</h1>
 
-  <!-- 카테고리 선택 -->
-  <select
-    on:change={(event) => {
-      newProduct.categoryId = event.target.value;
-      selectedCategoryId = event.target.value; // 선택된 카테고리 ID 저장
-      console.log(selectedCategoryId); // 확인을 위한 로그
-      handleCategoryChange(); // 카테고리 변경 시 필터링
-    }}
-    class="mt-4"
-  >
-    <option value="">모든 카테고리</option>
-    {#each categories as category}
-      <option value={category.id}>{category.name}</option>
-    {/each}
-  </select>
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- 카테고리 선택 -->
+      <Select
+        class="w-full"
+        on:change={(event) => {
+          newProduct.categoryId = event.target.value;
+          selectedCategoryId = event.target.value;
+          handleCategoryChange();
+        }}
+      >
+        <option value="">모든 카테고리</option>
+        {#each categories as category}
+          <option value={category.id}>{category.name}</option>
+        {/each}
+      </Select>
 
-  <!-- 서브 카테고리 선택 -->
-  <select
-    on:change={(event) => {
-      newProduct.subCategoryId = event.target.value;
-      selectedSubCategoryId = event.target.value; // 선택된 서브 카테고리 ID 저장
-      console.log(selectedSubCategoryId); // 확인을 위한 로그
-      handleSubCategoryChange(); // 서브 카테고리 변경 시 필터링
-    }}
-    class="mt-4"
-    disabled={!filteredSubCategories.length}
-  >
-    <option value="">모든 서브 카테고리</option>
-    {#each filteredSubCategories as subCategory}
-    <option value={subCategory.sub_id}>{subCategory.name}</option>
-    {/each}
-  </select>
+      <!-- 서브 카테고리 선택 -->
+      <Select
+        class="w-full"
+        on:change={(event) => {
+          newProduct.subCategoryId = event.target.value;
+          selectedSubCategoryId = event.target.value;
+          handleSubCategoryChange();
+        }}
+        disabled={!filteredSubCategories.length}
+      >
+        <option value="">모든 서브 카테고리</option>
+        {#each filteredSubCategories as subCategory}
+          <option value={subCategory.sub_id}>{subCategory.name}</option>
+        {/each}
+      </Select>
 
-  <Input
-    type="text"
-    placeholder="상품을 검색하세요..."
-    bind:value={searchQuery}
-    on:input={filterProducts}
-    class="mt-4"
-  />
+      <!-- 검색창 -->
+      <Input
+        type="text"
+        placeholder="상품을 검색하세요..."
+        bind:value={searchQuery}
+        on:input={filterProducts}
+        class="w-full"
+      />
 
-  <!-- 정렬 기준 선택 -->
-  <Select on:change={handleSortChange} class="mt-4">
-    <option value="default">정렬 기준 선택</option>
-    <option value="priceAsc">가격 낮은 순</option>
-    <option value="priceDesc">가격 높은 순</option>
-    <option value="recent">신상품 순</option>
-    <option value="rating">평점 순</option>
-  </Select>
+      <!-- 정렬 기준 선택 -->
+      <Select on:change={handleSortChange} class="w-full">
+        <option value="default">정렬 기준 선택</option>
+        <option value="priceAsc">가격 낮은 순</option>
+        <option value="priceDesc">가격 높은 순</option>
+        <option value="recent">신상품 순</option>
+        <option value="rating">평점 순</option>
+      </Select>
+    </div>
 
-  <!-- 상품 등록 버튼 -->
-  <Button on:click={handleRegisterProduct} color="blue" class="mt-4 text-white"
-    >상품 등록</Button
-  >
+    <!-- 상품 등록 버튼 -->
+    <Button
+      on:click={handleRegisterProduct}
+      color="blue"
+      class="mt-6 w-full md:w-auto"
+    >
+      상품 등록
+    </Button>
+  </div>
 
-  <h2 class="text-xl font-semibold mt-4">검색 결과:</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     {#each filteredProducts as product}
-      <div class="border rounded-lg overflow-hidden shadow-lg relative">
-        <img
-          src={`http://localhost:3000${product.image}`}
-          alt={product.name}
-          class="w-full h-48 object-cover"
-        />
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+        <div class="relative">
+          <img
+            src={`http://localhost:3000${product.image}`}
+            alt={product.name}
+            class="w-full h-64 object-cover"
+          />
 
-        <!-- 오버레이 추가 '판매 완료' -->
-        {#if product.status === 2}
-          <div class="overlay">
-            <p class="text-white text-lg font-semibold">판매 완료</p>
-          </div>
-        {/if}
+          {#if product.status === 2}
+            <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+              <p class="text-white text-xl font-bold">판매 완료</p>
+            </div>
+          {/if}
 
-        <!-- 오버레이 추가 '판매 중지' -->
-        {#if product.status === 3}
-          <div class="overlay">
-            <p class="text-white text-lg font-semibold">판매 중지</p>
-          </div>
-        {/if}
+          {#if product.status === 3}
+            <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+              <p class="text-white text-xl font-bold">판매 중지</p>
+            </div>
+          {/if}
+        </div>
 
-        <div class="p-4">
-          <h3 class="text-lg font-semibold">{product.name}</h3>
-          <p class="text-gray-500">{product.price}원</p>
-          <p class="text-gray-500">판매자: {product.nicName}</p>
-          <p class="text-gray-500">판매자 평점: {product.rating} ⭐</p>
-          <div class="flex justify-end items-center">
-            <Button on:click={() => handleViewProduct(product)} color="green"
-              >조회</Button
-            >
+        <div class="p-5">
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">{product.name}</h3>
+          <div class="space-y-2">
+            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{product.price.toLocaleString()}원</p>
+            <div class="flex items-center text-gray-600 dark:text-gray-300">
+              <span class="mr-2">판매자:</span>
+              <span class="font-medium">{product.nicName}</span>
+            </div>
+            <div class="flex items-center text-gray-600 dark:text-gray-300">
+              <span class="mr-2">평점:</span>
+              <span class="text-yellow-400">{'⭐'.repeat(Math.round(product.rating))}</span>
+              <span class="ml-1">({product.rating})</span>
+            </div>
           </div>
+          <Button
+            on:click={() => handleViewProduct(product)}
+            color="blue"
+            class="w-full mt-4"
+          >
+            상세보기
+          </Button>
         </div>
       </div>
     {/each}
@@ -253,40 +270,7 @@
 </main>
 
 <style>
-  main {
-    padding: 1rem;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .overlay {
-    position: absolute; /* 절대 위치 지정 */
-    top: 0;
-    left: 0;
-    right: 0;
-
-    height: 100%; /* 부모 요소의 높이를 100%로 설정 */
-
-    background-color: rgba(0, 0, 0, 0.5); /* 검정색 투명도 0.5 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white; /* 텍스트 색상 */
-    font-size: 1.5rem; /* 텍스트 크기 */
-    opacity: 1; /* 기본적으로 보임 */
-
-    pointer-events: none; /* 오버레이가 클릭 이벤트를 차단하지 않도록 설정 */
-  }
-
-  /* 부모 요소에 relative 속성 추가 */
-  .relative {
-    position: relative; /* 부모 요소의 위치를 상대적으로 설정 */
-  }
-
-  .overlay p {
-    pointer-events: auto; /* 텍스트 클릭 가능 */
+  :global(body) {
+    @apply bg-gray-100 dark:bg-gray-900;
   }
 </style>
