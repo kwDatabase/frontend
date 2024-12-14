@@ -520,6 +520,12 @@
       return; // 함수 종료
     }
 
+    // 로그인한 사용자 ID와 상품 소유자 ID 비교
+    if (updatedProduct.userName === loggedInUserId) {
+      alert("자신의 상품은 구매할 수 없습니다."); // 같은 사용자일 경우 알림
+      return; // 함수 종료
+    }
+
     const confirmation = confirm("정말 구매하시겠습니까?");
     if (confirmation) {
       try {
