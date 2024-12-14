@@ -15,6 +15,10 @@ export const load = async () => {
             rating: product.rating, // 평점 정보, 기본값 0
             seller: product.user_id, // 판매자 정보
             status: product.status_id,
+            category_id: product.category_id,
+            category_sub_id: product.category_sub_id,
+            category_name: product.category_name, 
+            sub_category_name: product.sub_category_name,
             date: `${product.enter_date} ${product.enter_time}`
         }))
     };

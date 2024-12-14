@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import { Input, Button, Select } from "flowbite-svelte";
   import { goto } from "$app/navigation";
   import { isLoggedIn } from "$src/stores/auth"; // 로그인 상태 스토어 가져오기
@@ -29,10 +30,46 @@
   export let data;
   let searchQuery = "";
   let sortOption = "default"; // 정렬 기준 초기화
-
   let products = data.products;
-
   let filteredProducts = [...products]; // 초기 필터링된 제품 리스트
+
+  let categories = []; // 카테고리 목록
+  let subCategories = []; // 서브 카테고리 목록
+  let selectedCategoryId = ""; // 선택된 카테고리 ID
+  let selectedSubCategoryId = ""; // 선택된 서브 카테고리 ID
+  let filteredSubCategories = []; // 필터링된 서브 카테고리 배열
+  let newProduct = { categoryId: "", subCategoryId: "" }; // 새로운 상품 데이터
+
+
+  // 카테고리, 서브 카테고리 호출 API
+  async function fetchCategories() {
+    try {
+      const response = await fetch("http://localhost:3000/products/categories"); // API 호출
+      if (!response.ok) {
+        throw new Error(`Failed to load categories: ${response.status}`);
+      }
+      const data = await response.json(); // 카테고리 및 서브 카테고리 데이터 가져오기
+      categories = data.categories; // 카테고리 배열
+      subCategories = data.subCategories; // 서브 카테고리 배열
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }
+
+  // 카테고리 선택 시 서브 카테고리 필터링
+  function handleCategoryChange() {
+    const selectedCategoryId = newProduct.categoryId; // 선택된 카테고리 ID
+    filteredSubCategories = subCategories.filter(
+      (subCategory) => subCategory.category_id == selectedCategoryId // ID로 필터링
+    );
+    newProduct.subCategoryId = ""; // 서브 카테고리 초기화
+    filterProducts(); // 카테고리 변경 시 제품 필터링
+  }
+
+  // 서브 카테고리 선택 시 필터링
+  function handleSubCategoryChange() {
+    filterProducts(); // 서브 카테고리 변경 시 제품 필터링
+  }
 
   // 날짜 변환 함수
   function parseDate(dateString) {
@@ -46,12 +83,16 @@
     // ISO 형식으로 변환
     return new Date(`${year}-${month}-${day}T${hours}:${minutes}:00`);
   }
-
+  
+  // 필터링된 제품 리스트 업데이트
   function filterProducts() {
-    // 검색 쿼리로 필터링
-    filteredProducts = products.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
+    filteredProducts = products.filter((product) => {
+      const matchesCategory = selectedCategoryId ? product.category_name == categories.find(cat => cat.id == selectedCategoryId).name : true;
+      const matchesSubCategory = selectedSubCategoryId ? product.sub_category_name == subCategories.find(subCat => subCat.sub_id == selectedSubCategoryId).name : true;
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesCategory && matchesSubCategory && matchesSearch;
+    });
     sortProducts(); // 필터링 후 정렬
   }
 
@@ -86,7 +127,7 @@
     sortProducts(); // 정렬 기준에 따라 상품 정렬
   }
 
-  // 상품 조회수 증가 요청
+  // 상품 조회수 증가 요청 API
   async function incrementViewCount(productId) {
     try {
       const response = await fetch(
@@ -109,10 +150,46 @@
     incrementViewCount(product.id); // 조회수 증가 요청
     goto(`/products/${product.id}`); // 상품 상세 페이지로 이동
   }
+
+  onMount(fetchCategories);
 </script>
 
 <main>
   <h1 class="text-2xl font-bold">상품 조회</h1>
+
+  <!-- 카테고리 선택 -->
+  <select
+    on:change={(event) => {
+      newProduct.categoryId = event.target.value;
+      selectedCategoryId = event.target.value; // 선택된 카테고리 ID 저장
+      console.log(selectedCategoryId); // 확인을 위한 로그
+      handleCategoryChange(); // 카테고리 변경 시 필터링
+    }}
+    class="mt-4"
+  >
+    <option value="">모든 카테고리</option>
+    {#each categories as category}
+      <option value={category.id}>{category.name}</option>
+    {/each}
+  </select>
+
+  <!-- 서브 카테고리 선택 -->
+  <select
+    on:change={(event) => {
+      newProduct.subCategoryId = event.target.value;
+      selectedSubCategoryId = event.target.value; // 선택된 서브 카테고리 ID 저장
+      console.log(selectedSubCategoryId); // 확인을 위한 로그
+      handleSubCategoryChange(); // 서브 카테고리 변경 시 필터링
+    }}
+    class="mt-4"
+    disabled={!filteredSubCategories.length}
+  >
+    <option value="">모든 서브 카테고리</option>
+    {#each filteredSubCategories as subCategory}
+    <option value={subCategory.sub_id}>{subCategory.name}</option>
+    {/each}
+  </select>
+
   <Input
     type="text"
     placeholder="상품을 검색하세요..."

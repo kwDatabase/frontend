@@ -513,7 +513,7 @@
   }
 
   // 상품 구매 API
-  async function handlePurchase(productId) {
+  async function handlePurchase(product) {
     // 로그인 여부 확인
     if (!loggedInUserId) {
       alert("상품을 구매하려면 로그인해야 합니다."); // 로그인하지 않은 경우 알림
@@ -530,7 +530,7 @@
     if (confirmation) {
       try {
         const response = await fetch(
-          `http://localhost:3000/products/purchase/${productId}`,
+          `http://localhost:3000/products/purchase/${product.id}`, // product.id 사용
           {
             method: "POST",
           },
@@ -541,7 +541,7 @@
         }
 
         alert("구매 완료했습니다."); // 구매 완료 알림
-        window.location.href = '/products'; // 리다이렉트
+        window.location.href = "/products"; // 리다이렉트
       } catch (error) {
         alert(error.message);
       }
@@ -550,107 +550,134 @@
 </script>
 
 <main>
-  <div class="relative">
-    <!-- 오버레이 추가 '판매 완료' -->
-    {#if updatedProduct.status === 2}
-      <div class="overlay">
-        <p class="text-white text-lg font-semibold">판매 완료</p>
-      </div>
-    {/if}
-
-    <!-- 오버레이 추가 '판매 중지' -->
-    {#if updatedProduct.status === 3}
-      <div class="overlay">
-        <p class="text-white text-lg font-semibold">판매 중지</p>
-      </div>
-    {/if}
-
+  <div>
     <h1 class="text-2xl font-bold">상품 조회</h1>
 
-    <form on:submit class="mt-4">
-      <!-- 상품 정보 입력 필드 -->
-      <div>
-        <label for="product-name" class="block text-sm font-medium"
-          >상품 사진</label
-        >
-        <div class="mt-4 product-detail-img-container">
-          <img
-            src={`http://localhost:3000${updatedProduct.image}`}
-            alt={updatedProduct.name}
-            class="w-full h-48 object-cover rounded"
+    <div class="relative">
+      <!-- 오버레이 추가 '판매 완료' -->
+      {#if updatedProduct.status === 2}
+        <div class="overlay">
+          <p class="text-white text-lg font-semibold">판매 완료</p>
+        </div>
+      {/if}
+
+      <!-- 오버레이 추가 '판매 중지' -->
+      {#if updatedProduct.status === 3}
+        <div class="overlay">
+          <p class="text-white text-lg font-semibold">판매 중지</p>
+        </div>
+      {/if}
+
+      <form on:submit class="mt-4">
+        <!-- 상품 정보 입력 필드 -->
+        <div>
+          <label for="product-name" class="block text-sm font-medium"
+            >상품 사진</label
+          >
+          <div class="mt-4 product-detail-img-container">
+            <img
+              src={`http://localhost:3000${updatedProduct.image}`}
+              alt={updatedProduct.name}
+              class="w-full h-48 object-cover rounded"
+            />
+          </div>
+          <label for="product-name" class="block text-sm font-medium"
+            >상품 이름</label
+          >
+          <input
+            id="product-name"
+            type="text"
+            bind:value={updatedProduct.name}
+            class="border rounded p-2 w-full"
+            disabled
           />
         </div>
-        <label for="product-name" class="block text-sm font-medium"
-          >상품 이름</label
-        >
-        <input
-          id="product-name"
-          type="text"
-          bind:value={updatedProduct.name}
-          class="border rounded p-2 w-full"
-          disabled
-        />
-      </div>
-      <div class="mt-2">
-        <label for="product-price" class="block text-sm font-medium">가격</label
-        >
-        <input
-          id="product-price"
-          type="number"
-          bind:value={updatedProduct.price}
-          class="border rounded p-2 w-full"
-          disabled
-        />
-      </div>
-      <div class="mt-2">
-        <label for="product-seller" class="block text-sm font-medium"
-          >판매자</label
-        >
-        <input
-          id="product-seller"
-          type="text"
-          bind:value={updatedProduct.nicName}
-          class="border rounded p-2 w-full"
-          disabled
-        />
-      </div>
-      <div class="mt-2">
-        <label for="product-rating" class="block text-sm font-medium"
-          >판매자 평점</label
-        >
-        <input
-          id="product-rating"
-          type="number"
-          bind:value={updatedProduct.rating}
-          step="0.1"
-          class="border rounded p-2 w-full"
-          disabled
-        />
-      </div>
-      <div class="mt-2">
-        <label for="product-description" class="block text-sm font-medium"
-          >상품 설명</label
-        >
-        <textarea
-          id="product-description"
-          bind:value={updatedProduct.content}
-          class="border rounded p-2 w-full"
-          rows="4"
-          disabled
-        ></textarea>
-      </div>
-      <div class="flex mt-4">
-        <Button
-          class="mr-4"
-          on:click={() => handlePurchase(updatedProduct.id)}
-          color="blue">상품 구매</Button
-        >
-        <Button class="ml-auto" on:click={handleEditProduct} color="yellow"
-          >상품 수정</Button
-        >
-      </div>
-    </form>
+        <div class="mt-2">
+          <div class="mt-2">
+            <label for="product-category" class="block text-sm font-medium"
+              >카테고리</label
+            >
+            <input
+              id="product-category"
+              type="text"
+              bind:value={updatedProduct.category_name}
+              class="border rounded p-2 w-full"
+              disabled
+            />
+          </div>
+          <div class="mt-2">
+            <label for="product-sub-category" class="block text-sm font-medium"
+              >서브 카테고리</label
+            >
+            <input
+              id="product-sub-category"
+              type="text"
+              bind:value={updatedProduct.sub_category_name}
+              class="border rounded p-2 w-full"
+              disabled
+            />
+          </div>
 
+          <label for="product-price" class="block text-sm font-medium"
+            >가격</label
+          >
+          <input
+            id="product-price"
+            type="number"
+            bind:value={updatedProduct.price}
+            class="border rounded p-2 w-full"
+            disabled
+          />
+        </div>
+        <div class="mt-2">
+          <label for="product-seller" class="block text-sm font-medium"
+            >판매자</label
+          >
+          <input
+            id="product-seller"
+            type="text"
+            bind:value={updatedProduct.nicName}
+            class="border rounded p-2 w-full"
+            disabled
+          />
+        </div>
+        <div class="mt-2">
+          <label for="product-rating" class="block text-sm font-medium"
+            >판매자 평점</label
+          >
+          <input
+            id="product-rating"
+            type="number"
+            bind:value={updatedProduct.rating}
+            step="0.1"
+            class="border rounded p-2 w-full"
+            disabled
+          />
+        </div>
+        <div class="mt-2">
+          <label for="product-description" class="block text-sm font-medium"
+            >상품 설명</label
+          >
+          <textarea
+            id="product-description"
+            bind:value={updatedProduct.content}
+            class="border rounded p-2 w-full"
+            rows="4"
+            disabled
+          ></textarea>
+        </div>
+        <div class="flex mt-4">
+          <Button
+            class="mr-4"
+            on:click={() => handlePurchase(updatedProduct.id)}
+            color="blue">상품 구매</Button
+          >
+          <Button class="ml-auto" on:click={handleEditProduct} color="yellow"
+            >상품 수정</Button
+          >
+        </div>
+      </form>
+    </div>
     <div class="mt-4 border"></div>
 
     <!-- 내비게이션 바 -->
