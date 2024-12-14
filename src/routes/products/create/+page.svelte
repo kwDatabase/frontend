@@ -101,84 +101,108 @@
     console.log("호출된 카테고리 명단 : ", categories, subCategories);
 </script>
 
-<main>
-    <h1 class="text-2xl font-bold">상품 등록</h1>
+<main class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">상품 등록</h1>
 
-    <Input
-        type="text"
-        placeholder="상품 이름"
-        bind:value={newProduct.name}
-        class="mt-4"
-    />
-    <Input
-        type="number"
-        placeholder="가격"
-        bind:value={newProduct.price}
-        class="mt-2"
-    />
-
-    <label class="block text-sm font-medium mt-4">카테고리</label>
-    <Select
-        bind:value={newProduct.categoryId}
-        class="mt-2"
-        on:change={handleCategoryChange}
-    >
-        <option value="" disabled selected>카테고리를 선택하세요</option>
-        {#each categories as category}
-            <option value={category.id}>{category.name}</option>
-        {/each}
-    </Select>
-
-    <label class="block text-sm font-medium mt-4">서브 카테고리</label>
-    <Select bind:value={newProduct.subCategoryId} class="mt-2">
-        <option value="" disabled selected>서브 카테고리를 선택하세요</option>
-        {#each filteredSubCategories as subCategory}
-            <option value={subCategory.sub_id}>{subCategory.name}</option>
-        {/each}
-    </Select>
-
-    <label class="block text-sm font-medium mt-4">상품 이미지</label>
-    <Input
-        type="file"
-        accept="image/*"
-        on:change={handleImageChange}
-        class="mt-2"
-    />
-
-    <div class="mt-4 product-detail-img-container">
-        {#if newProduct.image}
-            <img
-                src={newProduct.image}
-                alt="미리보기"
-                class="w-full h-48 object-cover rounded"
+    <div class="space-y-6">
+        <div class="form-group">
+            <Input
+                type="text"
+                placeholder="상품 이름을 입력하세요"
+                bind:value={newProduct.name}
+                class="focus:ring-blue-500 focus:border-blue-500"
             />
-        {/if}
+        </div>
+
+        <div class="form-group">
+            <Input
+                type="number"
+                placeholder="가격을 입력하세요"
+                bind:value={newProduct.price}
+                class="focus:ring-blue-500 focus:border-blue-500"
+            />
+        </div>
+
+        <div class="form-group">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">카테고리</label>
+            <Select
+                bind:value={newProduct.categoryId}
+                class="w-full rounded-lg"
+                on:change={handleCategoryChange}
+            >
+                <option value="" disabled selected>카테고리를 선택하세요</option>
+                {#each categories as category}
+                    <option value={category.id}>{category.name}</option>
+                {/each}
+            </Select>
+        </div>
+
+        <div class="form-group">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">서브 카테고리</label>
+            <Select bind:value={newProduct.subCategoryId} class="w-full rounded-lg">
+                <option value="" disabled selected>서브 카테고리를 선택하세요</option>
+                {#each filteredSubCategories as subCategory}
+                    <option value={subCategory.sub_id}>{subCategory.name}</option>
+                {/each}
+            </Select>
+        </div>
+
+        <div class="form-group">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">상품 이미지</label>
+            <Input
+                type="file"
+                accept="image/*"
+                on:change={handleImageChange}
+                class="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+            />
+        </div>
+
+        <div class="mt-4 product-detail-img-container">
+            {#if newProduct.image}
+                <img
+                    src={newProduct.image}
+                    alt="미리보기"
+                    class="w-full max-h-96 object-contain rounded-lg shadow-md"
+                />
+            {/if}
+        </div>
+
+        <div class="form-group">
+            <Textarea
+                placeholder="상품에 대한 자세한 설명을 입력하세요"
+                bind:value={newProduct.content}
+                class="w-full rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                rows="6"
+            />
+        </div>
+
+        <Button 
+            on:click={addProduct} 
+            class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200"
+        >
+            상품 등록하기
+        </Button>
     </div>
-
-    <Textarea
-        placeholder="상품 설명"
-        bind:value={newProduct.content}
-        class="mt-2"
-        rows="4"
-    />
-
-    <Button on:click={addProduct} color="blue" class="mt-4 text-white"
-        >등록</Button
-    >
 </main>
 
 <style>
     main {
-        padding: 1rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
     }
     .product-detail-img-container {
         display: flex;
         flex-direction: column;
-        align-items: center; /* 수평 중앙 정렬 */
-        justify-content: center; /* 수직 중앙 정렬 */
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem 0;
     }
     img {
-        width: 100%; /* 이미지가 컨테이너에 맞춰 조정되도록 설정 */
-        height: auto; /* 비율을 유지하며 높이 자동 조정 */
+        max-width: 100%;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 </style>
