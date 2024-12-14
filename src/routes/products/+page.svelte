@@ -224,10 +224,10 @@
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
         <div class="relative">
           <img
-            src={product.image ? `http://localhost:3000${product.image}` : '/images/default-product.png'}
+            src={product.image ? `http://localhost:3000${product.image}` : ''}
             alt={product.name}
             class="w-full h-64 object-cover"
-            on:error={(e) => e.target.src = '/images/default-product.png'}
+            on:error={(e) => e.target.src = ''}
           />
 
           {#if product.status === 2}
