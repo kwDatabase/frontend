@@ -232,10 +232,10 @@
 				</Select>
 			</div>
 			<div class="flex justify-end gap-2">
-				<Button outline color="alternative" on:click={() => showAuthModal = false}>
+				<Button color="alternative" on:click={() => showAuthModal = false}>
 					취소
 				</Button>
-				<Button outline on:click={updateUserAuthGroup}>
+				<Button color="alternative" on:click={updateUserAuthGroup}>
 					저장
 				</Button>
 			</div>
