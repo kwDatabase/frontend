@@ -43,7 +43,7 @@
 
 	async function updateUserAuthGroup() {
 		try {
-			const response = await fetch(`${apiBaseUrl}/users/auth-group`, {
+			const response = await fetch(`${apiBaseUrl}/users/auth-group/${selectedUser.Id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
